@@ -7,6 +7,7 @@ num_de_camadas = 3
 num_de_neuronios_por_camada_oculta = 3
 
 
-rede = Rede_Neural(2, 1, 3, 3)
+rede = Rede_Neural(2, 1, 3, 3, bd_bandeiras)
 rede.insere_sinapses()
 rede.mostra_informacoes_das_camadas()
+rede.aprender(136)

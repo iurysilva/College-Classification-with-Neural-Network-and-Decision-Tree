@@ -3,7 +3,8 @@ from objetos.estrutura_da_rede_neural import Camada
 
 
 class Rede_Neural:
-    def __init__(self, num_entradas, num_saidas,  num_camadas, neuronios_por_camada_oculta):
+    def __init__(self, num_entradas, num_saidas,  num_camadas, neuronios_por_camada_oculta, banco):
+        self.banco = banco
         self.num_entradas = num_entradas
         self.entradas = np.zeros((num_entradas, 1), dtype="float64")
         self.num_saidas = num_saidas
@@ -41,3 +42,13 @@ class Rede_Neural:
                 colunas = camada_2.numero_neuronios
                 sinapses = np.random.rand(linhas, colunas)
                 self.camadas[camada].sinapses = np.copy(sinapses)
+
+    def feedfoward(self):
+        a = 2
+
+    def backpropagation(self):
+        b = 3
+
+    def aprender(self, quantidade_de_linhas_para_ler):
+        for linha in range(quantidade_de_linhas_para_ler):
+            print(linha)
