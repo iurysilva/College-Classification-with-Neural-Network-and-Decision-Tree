@@ -1,5 +1,5 @@
 import numpy as np
-from objetos import Camada
+from objetos.estrutura_da_rede_neural import Camada
 
 
 class Rede_Neural:
@@ -12,6 +12,7 @@ class Rede_Neural:
         self.camadas = self.cria_camadas()
 
     def mostra_informacoes_das_camadas(self):
+        print('')
         for camada in range(self.numero_camadas):
             print("Informações da camada %d: " % camada)
             print("Numero de neuronios: ", self.camadas[camada].numero_neuronios)

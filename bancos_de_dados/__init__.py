@@ -1,0 +1,1 @@
+from bancos_de_dados.bd_bandeiras import bd_bandeiras
