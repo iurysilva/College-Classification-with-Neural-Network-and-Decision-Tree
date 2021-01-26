@@ -1,6 +1,6 @@
 import pandas as pd
 
 colunas = open('bancos_de_dados/colunas.txt', 'r')
-lista = [coluna[:-1] for coluna in colunas]
+nome_colunas = [coluna[:-1] for coluna in colunas]
 colunas.close()
-bd_bandeiras = pd.read_csv('bancos_de_dados/banco1.csv', names=lista, header=None)
+bd_bandeiras = pd.read_csv('bancos_de_dados/banco_bandeiras.csv', names=nome_colunas, header=None)
