@@ -1,3 +1,2 @@
 from estrutura_da_rede_neural.camada import Camada
 from estrutura_da_rede_neural.rede_neural import Rede_Neural
-
