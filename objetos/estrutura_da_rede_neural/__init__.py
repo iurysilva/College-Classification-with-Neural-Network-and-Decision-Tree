@@ -1,2 +1,0 @@
-from objetos.estrutura_da_rede_neural.camada import Camada
-from objetos.estrutura_da_rede_neural.rede_neural import Rede_Neural

@@ -1,5 +1,5 @@
 import numpy as np
-from objetos.estrutura_da_rede_neural import Camada
+from estrutura_da_rede_neural import Camada
 
 
 class Rede_Neural:

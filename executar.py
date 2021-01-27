@@ -1,4 +1,4 @@
-from objetos.estrutura_da_rede_neural import Rede_Neural
+from estrutura_da_rede_neural import Rede_Neural
 from bancos_de_dados import bd_bandeiras
 
 num_de_entradas = 2
