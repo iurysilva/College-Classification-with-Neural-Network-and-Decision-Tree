@@ -74,33 +74,35 @@ class Rede_Neural:
         print("valor esperado: ", self.valor_esperado, "\n")
 
     def backpropagation(self):
-
-        # Oculta --> Saída
-        erro_saida = self.valor_esperado - self.camadas[2].neuronios
-        derivada_saida = derivar_sigmoide(self.camadas[2].neuronios)
-        transposta_oculto = np.transpose(self.camadas[1].neuronios)
+        erro_saida = self.valor_esperado - self.camadas[-1].neuronios
+        derivada_saida = derivar_sigmoide(self.camadas[-1].neuronios)
+        transposta_oculto = np.transpose(self.camadas[-2].neuronios)
 
         gradiente = np.multiply(derivada_saida, erro_saida)
         gradiente = gradiente * self.learning_rate
 
-        self.camadas[1].bias = self.camadas[1].bias + gradiente
+        self.camadas[-2].bias = self.camadas[-2].bias + gradiente
 
         delta_pesos_oculto_saida = np.matmul(gradiente, transposta_oculto)
-        self.camadas[1].sinapses = self.camadas[1].sinapses + delta_pesos_oculto_saida
+        self.camadas[-2].sinapses = self.camadas[-2].sinapses + delta_pesos_oculto_saida
+        self.camadas[-1].erro = erro_saida
 
-        # Entrada --> Oculta
-        transposta_pesos_oculto_saida = np.transpose(self.camadas[1].sinapses)
-        erro_oculto = np.matmul(transposta_pesos_oculto_saida, erro_saida)
-        derivada_oculto = derivar_sigmoide(self.camadas[1].neuronios)
-        transposta_entrada = np.transpose(self.camadas[0].neuronios)
+        for i in range(self.numero_camadas - 2, 0, -1):
+            transposta_pesos = np.transpose(self.camadas[i].sinapses)
+            erro = np.matmul(transposta_pesos, self.camadas[i+1].erro)
+            derivada = derivar_sigmoide(self.camadas[i].neuronios)
+            transposta = np.transpose(self.camadas[i-1].neuronios)
+    
+            gradiente_O = np.multiply(erro, derivada)
+            gradiente_O = gradiente_O * self.learning_rate
+    
+            self.camadas[i-1].bias = self.camadas[i-1].bias + gradiente
+    
+            delta_pesos = np.matmul(gradiente_O, transposta)
+            self.camadas[i-1].sinapses = self.camadas[i-1].sinapses + delta_pesos
+            self.camadas[i].erro = erro
 
-        gradiente_O = np.multiply(erro_oculto, derivada_oculto)
-        gradiente_O = gradiente_O * self.learning_rate
 
-        self.camadas[0].bias = self.camadas[0].bias + gradiente
-
-        delta_pesos_entrada_oculto = np.matmul(gradiente_O, transposta_entrada)
-        self.camadas[0].sinapses = self.camadas[0].sinapses + delta_pesos_entrada_oculto
 
     def aprender(self, quantidade_de_linhas_para_ler):
         banco = self.banco.values
