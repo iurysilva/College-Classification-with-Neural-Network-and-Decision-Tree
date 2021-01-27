@@ -2,7 +2,7 @@ import numpy as np
 from estrutura_da_rede_neural import Camada
 from estrutura_da_rede_neural.funcoes_uteis import sigmoide
 from estrutura_da_rede_neural.funcoes_uteis import multiplicar_matrizes
-
+from estrutura_da_rede_neural.funcoes_uteis import derivar_sigmoide
 
 class Rede_Neural:
     def __init__(self, atributos_entradas, atributos_saidas,  num_camadas, neuronios_por_camada_oculta, banco):
@@ -15,6 +15,7 @@ class Rede_Neural:
         self.neuronios_por_camada_oculta = neuronios_por_camada_oculta
         self.camadas = self.cria_camadas()
         self.valor_esperado = None
+        self.learning_rate = 1
 
     def mostra_informacoes_das_camadas(self):
         print('')
@@ -73,7 +74,33 @@ class Rede_Neural:
         print("valor esperado: ", self.valor_esperado, "\n")
 
     def backpropagation(self):
-        b = 3
+
+        # Oculta --> Saída
+        erro_saida = self.valor_esperado - self.camadas[2].neuronios
+        derivada_saida = derivar_sigmoide(self.camadas[2].neuronios)
+        transposta_oculto = np.transpose(self.camadas[1].neuronios)
+
+        gradiente = np.multiply(derivada_saida, erro_saida)
+        gradiente = gradiente * self.learning_rate
+
+        self.camadas[1].bias = self.camadas[1].bias + gradiente
+
+        delta_pesos_oculto_saida = np.matmul(gradiente, transposta_oculto)
+        self.camadas[1].sinapses = self.camadas[1].sinapses + delta_pesos_oculto_saida
+
+        # Entrada --> Oculta
+        transposta_pesos_oculto_saida = np.transpose(self.camadas[1].sinapses)
+        erro_oculto = np.matmul(transposta_pesos_oculto_saida, erro_saida)
+        derivada_oculto = derivar_sigmoide(self.camadas[1].neuronios)
+        transposta_entrada = np.transpose(self.camadas[0].neuronios)
+
+        gradiente_O = np.multiply(erro_oculto, derivada_oculto)
+        gradiente_O = gradiente_O * self.learning_rate
+
+        self.camadas[0].bias = self.camadas[0].bias + gradiente
+
+        delta_pesos_entrada_oculto = np.matmul(gradiente_O, transposta_entrada)
+        self.camadas[0].sinapses = self.camadas[0].sinapses + delta_pesos_entrada_oculto
 
     def aprender(self, quantidade_de_linhas_para_ler):
         banco = self.banco.values
@@ -81,3 +108,4 @@ class Rede_Neural:
             self.inserir_entradas(linha, banco)
             self.inserir_saidas(linha, banco)
             self.feedfoward()
+            self.backpropagation()

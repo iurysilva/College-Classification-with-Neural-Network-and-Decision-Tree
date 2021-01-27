@@ -4,7 +4,7 @@ from estrutura_da_rede_neural import Rede_Neural
 
 
 def criar_arquitetura_1():
-    atributos_entrada = np.array([1, 3])
+    atributos_entrada = np.array([4, 5])
     atributos_saida = np.array([6])
     num_de_camadas = 3
     num_de_neuronios_por_camada_oculta = 3

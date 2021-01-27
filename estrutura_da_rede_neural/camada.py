@@ -7,3 +7,4 @@ class Camada:
         self.neuronios = np.zeros((numero_neuronios, 1))
         self.sinapses = None
         self.final = final
+        self.bias = np.zeros((numero_neuronios, 1))
