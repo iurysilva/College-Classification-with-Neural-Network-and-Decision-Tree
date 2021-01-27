@@ -68,9 +68,9 @@ class Rede_Neural:
                 print('neuronios da camada atual: ')
                 print(camada.neuronios)
                 print('multiplicação das sinapses pelos neuronios: ')
-                print(self.camadas[camada_atual+1].neuronios, '\n')
+                print(self.camadas[camada_atual+1].neuronios)
         print("valor na camada final: ", self.camadas[-1].neuronios)
-        print("valor esperado: ", self.valor_esperado)
+        print("valor esperado: ", self.valor_esperado, "\n")
 
     def backpropagation(self):
         b = 3

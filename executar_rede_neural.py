@@ -1,14 +1,8 @@
-from estrutura_da_rede_neural import Rede_Neural
-from bancos_de_dados import bd_bandeiras
-import numpy as np
+from arquiteturas_rede_neural import criar_arquitetura_1
 
-atributos_entrada = np.array([1, 3])
-atributos_saida = np.array([6])
-num_de_camadas = 3
-num_de_neuronios_por_camada_oculta = 3
-linhas_para_aprender = 1
+arquitetura = criar_arquitetura_1()
+linhas_para_aprender = 3
 
-
-rede = Rede_Neural(atributos_entrada, atributos_saida, num_de_camadas, num_de_neuronios_por_camada_oculta, bd_bandeiras)
+rede = arquitetura
 rede.insere_sinapses()
 rede.aprender(linhas_para_aprender)
