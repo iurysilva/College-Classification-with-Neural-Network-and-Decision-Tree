@@ -1,6 +1,8 @@
 import numpy as np
 from estrutura_da_rede_neural import Camada
-from estrutura_da_rede_neural.funcoes_de_ativacao import sigmoide
+from estrutura_da_rede_neural.funcoes_uteis import sigmoide
+from estrutura_da_rede_neural.funcoes_uteis import multiplicar_matrizes
+
 
 class Rede_Neural:
     def __init__(self, atributos_entradas, atributos_saidas,  num_camadas, neuronios_por_camada_oculta, banco):
@@ -59,7 +61,7 @@ class Rede_Neural:
         for camada_atual in range(self.numero_camadas-1):
             camada = self.camadas[camada_atual]
             if not camada.final:
-                multiplicacao_matricial = np.matmul(camada.sinapses, camada.neuronios)
+                multiplicacao_matricial = multiplicar_matrizes(camada.sinapses, camada.neuronios)
                 self.camadas[camada_atual + 1].neuronios = sigmoide(multiplicacao_matricial)
                 print('sinapses que ligam a próxima camada: ')
                 print(camada.sinapses)
