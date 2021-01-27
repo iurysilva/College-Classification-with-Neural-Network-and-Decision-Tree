@@ -3,8 +3,8 @@ from collections import Counter
 
 
 class Arvore_Decisao(object):
-    
-    def __init__(self,banco_de_dados,numero_amostras):
+        
+    def __init__(self, banco_de_dados, numero_amostras):
         
         self.numero_amostras = numero_amostras
         self.bd = banco_de_dados.drop(columns=['name','religion']).head(self.numero_amostras)
@@ -12,11 +12,11 @@ class Arvore_Decisao(object):
         
         self.entropia_bd = self.calcula_entropia([contagem['freq'] for contagem in self.contagem(self.alvo).values()])
         self.ganhos = {}
+        self.razao_ganhos = {}
         
         for atributo in ['stripes','bars','circles','crosses']:
-            self.calcula_info_necessaria(atributo)
-        print(self.ganhos)
-        
+            self.calcula_ganho(atributo)
+            self.calcula_razao_ganho(atributo)
     
     
     def contagem(self, series):
@@ -55,14 +55,24 @@ class Arvore_Decisao(object):
         return entropia
         
     
-    def calcula_info_necessaria(self, atributo):
+    def calcula_ganho(self, atributo):
         
         contagem_atributo = self.contagem_atributo(self.bd[f'{atributo}'])
         ganho_atributo = 0
         
         for contagem in contagem_atributo.values():
             cardinalidade = (contagem['freq'] / self.numero_amostras)
-            ganho_atributo += cardinalidade * self.calcula_entropia(list(contagem.values())[1:])
+            ganho_atributo += cardinalidade * self.calcula_entropia([*contagem.values()][1:])
             
         ganho_atributo = self.entropia_bd - ganho_atributo
         self.ganhos[atributo] = ganho_atributo
+    
+    
+    def calcula_razao_ganho(self, atributo):
+        
+        contagem_atributo = self.contagem_atributo(self.bd[f'{atributo}'])
+        frequencia_atributo = [[*contagem.values()][0] for contagem in contagem_atributo.values()]
+        divisao_informacao = self.calcula_entropia(frequencia_atributo)
+        
+        razao_ganho = self.ganhos[atributo] / divisao_informacao
+        self.razao_ganhos[atributo] = razao_ganho
