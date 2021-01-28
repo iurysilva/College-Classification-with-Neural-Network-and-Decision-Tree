@@ -92,6 +92,7 @@ class Rede_Neural:
     def testar_feed_foward(self, linha):
         self.inserir_entradas(linha)
         self.inserir_saidas(linha)
+        self.linha_atual = linha
         self.feedfoward()
 
     def backpropagation(self):
@@ -125,7 +126,7 @@ class Rede_Neural:
 
     def aprender(self, quantidade_de_linhas_para_ler):
         for iteracoes in range(quantidade_de_linhas_para_ler):
-            linha = np.random.randint(105)
+            linha = np.random.randint(214)
             self.linha_atual = linha
             self.inserir_entradas(linha)
             self.inserir_saidas(linha)
