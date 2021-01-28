@@ -1,10 +1,11 @@
 import numpy as np
+import pandas as pd
 from estrutura_da_rede_neural import Camada
 from estrutura_da_rede_neural.funcoes_uteis import sigmoide
 from estrutura_da_rede_neural.funcoes_uteis import multiplicar_matrizes
 from estrutura_da_rede_neural.funcoes_uteis import derivar_sigmoide
 from estrutura_da_rede_neural.funcoes_uteis import tahn
-
+from bancos_de_dados.ferramentas import *
 
 class Rede_Neural:
     def __init__(self, atributos_entradas, atributos_saidas,  num_camadas, neuronios_por_camada_oculta, banco):
@@ -20,6 +21,15 @@ class Rede_Neural:
         self.learning_rate = 1
         self.linha_atual = None
         self.quantidade_de_linhas_para_ler = None
+        self.tipos_saidas = []
+        self.base_treino = pd.DataFrame([])
+        self.base_teste = pd.DataFrame([])
+
+        for linha in (self.banco.values):
+            valor = linha[0]
+            if valor not in self.tipos_saidas:
+                self.tipos_saidas.append(valor)
+        self.tipos_saidas.sort()
 
     def mostra_informacoes_das_camadas(self):
         print('')
@@ -73,6 +83,8 @@ class Rede_Neural:
                 valor = 3
             else:
                 valor = valor
+            if self.valor_esperado not in self.tipos_saidas:
+                self.tipos_saidas.append(self.valor_esperado)
             self.valor_esperado = sigmoide(valor)
 
     def feedfoward(self):
@@ -128,6 +140,18 @@ class Rede_Neural:
             self.camadas[i].erro = erro
 
     def aprender(self, iteracoes):
+        '''
+        for classe in (self.tipos_saidas):
+            banco_auxiliar = self.banco.query('index==%d' %classe)
+            treino_auxiliar = retorna_treino(banco_auxiliar)
+            print(treino_auxiliar)
+            self.base_treino.append(treino_auxiliar, ignore_index=True)
+            print(self.base_treino)
+            teste_auxiliar = retorna_teste(banco_auxiliar, treino_auxiliar)
+            self.base_teste = np.concatenate((self.base_teste, teste_auxiliar.values))
+            print(self.base_teste)
+        '''
+
         for iteracoes in range(iteracoes):
             linha = np.random.randint(self.quantidade_de_linhas_para_ler)
             self.linha_atual = linha
