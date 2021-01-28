@@ -56,13 +56,21 @@ class Rede_Neural:
         banco = self.banco.values
         for entrada in range(self.num_entradas):
             atributo = self.atributos_de_entrada[entrada]
-            self.camadas[0].neuronios[entrada] = sigmoide(banco[linha][atributo]/10)
+            self.camadas[0].neuronios[entrada] = sigmoide(banco[linha][atributo])
 
     def inserir_saidas(self, linha):
         banco = self.banco.values
         for saida in range(self.num_saidas):
             atributo = self.atributos_de_saida[saida]
-            self.valor_esperado = sigmoide(banco[linha][atributo]/10)
+            valor = banco[linha][atributo]
+            print(valor)
+            if valor == 'Iris-setosa':
+                valor = 1
+            elif valor == 'Iris-versicolor':
+                valor = 2
+            else:
+                valor = 3
+            self.valor_esperado = sigmoide(valor)
 
     def feedfoward(self):
         print("lendo linha: ", self.linha_atual)
