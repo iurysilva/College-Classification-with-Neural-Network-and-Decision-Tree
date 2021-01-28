@@ -1,1 +1,2 @@
 from arquiteturas_rede_neural.arquiteturas import criar_arquitetura_1
+from arquiteturas_rede_neural.arquiteturas import criar_arquitetura_2

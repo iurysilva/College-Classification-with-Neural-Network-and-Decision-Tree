@@ -3,6 +3,8 @@ from estrutura_da_rede_neural import Camada
 from estrutura_da_rede_neural.funcoes_uteis import sigmoide
 from estrutura_da_rede_neural.funcoes_uteis import multiplicar_matrizes
 from estrutura_da_rede_neural.funcoes_uteis import derivar_sigmoide
+from estrutura_da_rede_neural.funcoes_uteis import tahn
+
 
 class Rede_Neural:
     def __init__(self, atributos_entradas, atributos_saidas,  num_camadas, neuronios_por_camada_oculta, banco):
@@ -16,6 +18,7 @@ class Rede_Neural:
         self.camadas = self.cria_camadas()
         self.valor_esperado = None
         self.learning_rate = 1
+        self.linha_atual = None
 
     def mostra_informacoes_das_camadas(self):
         print('')
@@ -38,7 +41,7 @@ class Rede_Neural:
         camadas[-1].final = True
         return camadas
 
-    def insere_sinapses(self):
+    def insere_sinapses_e_bias(self):
         for camada in range(self.numero_camadas):
             if not self.camadas[camada].final:
                 camada_1 = self.camadas[camada]
@@ -47,31 +50,41 @@ class Rede_Neural:
                 colunas = camada_1.numero_neuronios
                 sinapses = np.random.rand(linhas, colunas)
                 self.camadas[camada].sinapses = np.copy(sinapses)
+                self.camadas[camada].bias = np.zeros((self.camadas[camada + 1].numero_neuronios, 1))
 
-    def inserir_entradas(self, linha, banco):
+    def inserir_entradas(self, linha):
+        banco = self.banco.values
         for entrada in range(self.num_entradas):
             atributo = self.atributos_de_entrada[entrada]
-            self.camadas[0].neuronios[entrada] = sigmoide(banco[linha][atributo])
+            self.camadas[0].neuronios[entrada] = sigmoide(banco[linha][atributo]/10)
 
-    def inserir_saidas(self, linha, banco):
+    def inserir_saidas(self, linha):
+        banco = self.banco.values
         for saida in range(self.num_saidas):
             atributo = self.atributos_de_saida[saida]
-            self.valor_esperado = sigmoide(banco[linha][atributo])
+            self.valor_esperado = sigmoide(banco[linha][atributo]/10)
 
     def feedfoward(self):
+        print("lendo linha: ", self.linha_atual)
         for camada_atual in range(self.numero_camadas-1):
             camada = self.camadas[camada_atual]
             if not camada.final:
                 multiplicacao_matricial = multiplicar_matrizes(camada.sinapses, camada.neuronios)
+                multiplicacao_matricial = multiplicacao_matricial + camada.bias
                 self.camadas[camada_atual + 1].neuronios = sigmoide(multiplicacao_matricial)
-                print('sinapses que ligam a próxima camada: ')
+                '''print('sinapses ligadas a camada %d: ' % camada_atual)
                 print(camada.sinapses)
                 print('neuronios da camada atual: ')
                 print(camada.neuronios)
                 print('multiplicação das sinapses pelos neuronios: ')
-                print(self.camadas[camada_atual+1].neuronios)
+                print(self.camadas[camada_atual+1].neuronios)'''
         print("valor na camada final: ", self.camadas[-1].neuronios)
         print("valor esperado: ", self.valor_esperado, "\n")
+
+    def testar_feed_foward(self, linha):
+        self.inserir_entradas(linha)
+        self.inserir_saidas(linha)
+        self.feedfoward()
 
     def backpropagation(self):
         erro_saida = self.valor_esperado - self.camadas[-1].neuronios
@@ -102,12 +115,11 @@ class Rede_Neural:
             self.camadas[i-1].sinapses = self.camadas[i-1].sinapses + delta_pesos
             self.camadas[i].erro = erro
 
-
-
     def aprender(self, quantidade_de_linhas_para_ler):
-        banco = self.banco.values
-        for linha in range(quantidade_de_linhas_para_ler):
-            self.inserir_entradas(linha, banco)
-            self.inserir_saidas(linha, banco)
+        for iteracoes in range(quantidade_de_linhas_para_ler):
+            linha = np.random.randint(130)
+            self.linha_atual = linha
+            self.inserir_entradas(linha)
+            self.inserir_saidas(linha)
             self.feedfoward()
             self.backpropagation()
