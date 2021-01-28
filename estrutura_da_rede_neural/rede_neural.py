@@ -19,6 +19,7 @@ class Rede_Neural:
         self.valor_esperado = None
         self.learning_rate = 1
         self.linha_atual = None
+        self.quantidade_de_linhas_para_ler = None
 
     def mostra_informacoes_das_camadas(self):
         print('')
@@ -124,9 +125,9 @@ class Rede_Neural:
             self.camadas[i-1].sinapses = self.camadas[i-1].sinapses + delta_pesos
             self.camadas[i].erro = erro
 
-    def aprender(self, quantidade_de_linhas_para_ler):
-        for iteracoes in range(quantidade_de_linhas_para_ler):
-            linha = np.random.randint(214)
+    def aprender(self, iteracoes):
+        for iteracoes in range(iteracoes):
+            linha = np.random.randint(self.quantidade_de_linhas_para_ler)
             self.linha_atual = linha
             self.inserir_entradas(linha)
             self.inserir_saidas(linha)
