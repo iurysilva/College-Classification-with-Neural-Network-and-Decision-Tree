@@ -117,7 +117,7 @@ class Rede_Neural:
             gradiente_O = np.multiply(erro, derivada)
             gradiente_O = gradiente_O * self.learning_rate
     
-            self.camadas[i-1].bias = self.camadas[i-1].bias + gradiente
+            self.camadas[i-1].bias = self.camadas[i-1].bias + gradiente_O
     
             delta_pesos = np.matmul(gradiente_O, transposta)
             self.camadas[i-1].sinapses = self.camadas[i-1].sinapses + delta_pesos
