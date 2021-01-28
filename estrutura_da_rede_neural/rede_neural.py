@@ -68,7 +68,7 @@ class Rede_Neural:
                 valor = 1
             elif valor == 'Iris-versicolor':
                 valor = 2
-            else:
+            elif valor == 'Iris-virginica':
                 valor = 3
             self.valor_esperado = sigmoide(valor)
 
@@ -125,7 +125,7 @@ class Rede_Neural:
 
     def aprender(self, quantidade_de_linhas_para_ler):
         for iteracoes in range(quantidade_de_linhas_para_ler):
-            linha = np.random.randint(130)
+            linha = np.random.randint(105)
             self.linha_atual = linha
             self.inserir_entradas(linha)
             self.inserir_saidas(linha)
