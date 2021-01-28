@@ -2,6 +2,7 @@ import numpy as np
 from bancos_de_dados import bd_bandeiras
 from bancos_de_dados import bd_iris
 from bancos_de_dados import bd_vidros
+from bancos_de_dados import bd_vinho
 from estrutura_da_rede_neural import Rede_Neural
 
 
@@ -17,10 +18,10 @@ def criar_arquitetura_1():
 
 
 def criar_arquitetura_2():
-    atributos_entrada = np.array([2, 4, 5, 6, 7])
-    atributos_saida = np.array([1])
+    atributos_entrada = np.array([1, 4, 5, 6, 7])
+    atributos_saida = np.array([2])
     num_de_camadas = 3
-    num_de_neuronios_por_camada_oculta = 4
+    num_de_neuronios_por_camada_oculta = 6
     rede = Rede_Neural(atributos_entrada, atributos_saida, num_de_camadas, num_de_neuronios_por_camada_oculta,
                        bd_bandeiras)
     rede.quantidade_de_linhas_para_ler = 193
@@ -35,4 +36,15 @@ def criar_arquitetura_3():
     rede = Rede_Neural(atributos_entrada, atributos_saida, num_de_camadas, num_de_neuronios_por_camada_oculta,
                        bd_iris)
     rede.quantidade_de_linhas_para_ler = 150
+    return rede
+
+
+def criar_arquitetura_4():
+    atributos_entrada = np.array([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+    atributos_saida = np.array([0])
+    num_de_camadas = 4
+    num_de_neuronios_por_camada_oculta = 9
+    rede = Rede_Neural(atributos_entrada, atributos_saida, num_de_camadas, num_de_neuronios_por_camada_oculta,
+                       bd_vinho)
+    rede.quantidade_de_linhas_para_ler = 178
     return rede

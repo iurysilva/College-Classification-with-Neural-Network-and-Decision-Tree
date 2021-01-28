@@ -71,6 +71,8 @@ class Rede_Neural:
                 valor = 2
             elif valor == 'Iris-virginica':
                 valor = 3
+            else:
+                valor = valor
             self.valor_esperado = sigmoide(valor)
 
     def feedfoward(self):

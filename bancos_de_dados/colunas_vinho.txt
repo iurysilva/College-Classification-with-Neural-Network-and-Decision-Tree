@@ -1,0 +1,13 @@
+Alcohol
+Malic acid
+Ash
+Alcalinity of ash
+Magnesium
+Total phenols
+Flavanoids
+Nonflavanoid phenols
+Proanthocyanins
+Color intensity
+Hue
+diluted_wines
+Proline
