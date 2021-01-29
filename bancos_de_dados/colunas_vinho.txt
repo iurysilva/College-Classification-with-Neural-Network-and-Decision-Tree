@@ -1,3 +1,4 @@
+Wine
 Alcohol
 Malic acid
 Ash
@@ -9,5 +10,5 @@ Nonflavanoid phenols
 Proanthocyanins
 Color intensity
 Hue
-diluted_wines
+Diluted wines
 Proline
