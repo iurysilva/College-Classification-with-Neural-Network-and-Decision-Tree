@@ -155,12 +155,12 @@ class Rede_Neural:
 
             if (len(tipos_saidas) == 2):
                 if self.camadas[-1].neuronios[0][0] < ((valor_1 + valor_2) / 2):
-                    resultado = tipos_saidas[0]
+                    resultado = np.where(tipos_saidas == tipos_saidas[0])
                 elif self.camadas[-1].neuronios[0][0] >= ((valor_1 + valor_2) / 2):
-                    resultado = tipos_saidas[-1]
+                    resultado = np.where(tipos_saidas == tipos_saidas[-1])
             else:
                 if self.camadas[-1].neuronios[0][0] < ((valor_1 + valor_2) / 2):
-                    resultado = tipos_saidas[0]
+                    resultado = np.where(tipos_saidas == tipos_saidas[0])
 
                 elif self.camadas[-1].neuronios[0][0] >= ((valor_1 + valor_2) / 2) and self.camadas[-1].neuronios[0][0] < ((valor_ultimo + valor_penultimo) / 2):
                     for j in range(1, len(tipos_saidas) - 1):
@@ -168,12 +168,16 @@ class Rede_Neural:
                         valor_2 = sigmoide(tipos_saidas[j - 1])
                         valor_3 = sigmoide(tipos_saidas[j + 1])
                         if (self.camadas[-1].neuronios[0][0] >= (valor_1 + valor_2)/2) and (self.camadas[-1].neuronios[0][0] < (valor_1 + valor_3))/2:
-                            resultado = tipos_saidas[j]
+                            resultado = np.where(tipos_saidas == tipos_saidas[j])
 
                 elif self.camadas[-1].neuronios[0][0] >= ((valor_ultimo + valor_penultimo) / 2):
-                    resultado = tipos_saidas[-1]
+                    resultado = np.where(tipos_saidas == tipos_saidas[-1])
 
-            matriz_confusao[int(base_numpy[linha][self.atributos_de_saida[0]]-1)][int(resultado)-1] += 1
+            valor_teste = np.where(tipos_saidas == base_numpy[linha][self.atributos_de_saida[0]])
+            print(valor_teste[0])
+            print(resultado[0])
+            matriz_confusao[int(valor_teste[0])][int(resultado[0])] += 1
+            print()
 
         print(matriz_confusao)
         acertos = 0

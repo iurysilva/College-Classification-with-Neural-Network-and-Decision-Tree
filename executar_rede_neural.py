@@ -1,9 +1,9 @@
 from arquiteturas_rede_neural.arquiteturas import *
 from bancos_de_dados.bd_tratado import *
 
-arquitetura = criar_arquitetura_vidros()
+arquitetura = criar_arquitetura_vinho()
 num_epocas = 500
-learning_rate = 0.2
+learning_rate = 0.5
 
 rede = arquitetura
 rede.learning_rate = learning_rate
