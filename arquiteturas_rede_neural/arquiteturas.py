@@ -43,7 +43,7 @@ def criar_arquitetura_vinho():
     atributos_entrada = np.array([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
     atributos_saida = np.array([0])
     num_de_camadas = 4
-    num_de_neuronios_por_camada_oculta = 9
+    num_de_neuronios_por_camada_oculta = 11
     rede = Rede_Neural(atributos_entrada, atributos_saida, num_de_camadas, num_de_neuronios_por_camada_oculta,
                        bd_vinho)
     rede.quantidade_de_linhas_para_ler = 178
