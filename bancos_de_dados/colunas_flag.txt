@@ -1,5 +1,5 @@
 name
-landmass
+continente
 zone
 area
 population
