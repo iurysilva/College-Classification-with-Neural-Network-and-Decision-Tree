@@ -4,12 +4,13 @@ import pandas as pd
 
 
 def tratar_bd(banco, coluna):
+    print(coluna)
     tipos_saidas = banco[coluna].unique()
-    print(tipos_saidas)
     base_treino = np.array([])
     base_teste = np.array([])
     tamanho_treino = 0
     tamanho_teste = 0
+    
     for classe in tipos_saidas:
         banco_auxiliar = banco.query('%s==%d' %(coluna, classe))
         treino_auxiliar = retorna_treino(banco_auxiliar)
@@ -20,10 +21,11 @@ def tratar_bd(banco, coluna):
             base_teste = np.concatenate((base_teste, linha), axis=0)
         tamanho_treino += len(treino_auxiliar)
         tamanho_teste += len(teste_auxiliar)
+        
     num_colunas = len(banco.columns)
     base_treino = np.reshape(base_treino, (tamanho_treino, num_colunas))
     base_teste = np.reshape(base_teste, (tamanho_teste, num_colunas))
-    base_treino = pd.DataFrame(base_treino)
-    base_teste = pd.DataFrame(base_teste)
+    base_treino = pd.DataFrame(base_treino, columns=banco.columns)
+    base_teste = pd.DataFrame(base_teste, columns=banco.columns)
 
     return base_treino, base_teste, tipos_saidas
