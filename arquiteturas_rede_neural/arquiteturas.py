@@ -13,7 +13,6 @@ def criar_arquitetura_vidros():
     num_de_neuronios_por_camada_oculta = 8
     rede = Rede_Neural(atributos_entrada, atributos_saida, num_de_camadas, num_de_neuronios_por_camada_oculta,
                        bd_vidros)
-    rede.quantidade_de_linhas_para_ler = 214
     return rede
 
 
@@ -24,7 +23,6 @@ def criar_arquitetura_bandeiras():
     num_de_neuronios_por_camada_oculta = 6
     rede = Rede_Neural(atributos_entrada, atributos_saida, num_de_camadas, num_de_neuronios_por_camada_oculta,
                        bd_bandeiras)
-    rede.quantidade_de_linhas_para_ler = 193
     return rede
 
 
@@ -35,7 +33,6 @@ def criar_arquitetura_iris():
     num_de_neuronios_por_camada_oculta = 6
     rede = Rede_Neural(atributos_entrada, atributos_saida, num_de_camadas, num_de_neuronios_por_camada_oculta,
                        bd_iris)
-    rede.quantidade_de_linhas_para_ler = 150
     return rede
 
 
@@ -46,5 +43,4 @@ def criar_arquitetura_vinho():
     num_de_neuronios_por_camada_oculta = 11
     rede = Rede_Neural(atributos_entrada, atributos_saida, num_de_camadas, num_de_neuronios_por_camada_oculta,
                        bd_vinho)
-    rede.quantidade_de_linhas_para_ler = 178
     return rede

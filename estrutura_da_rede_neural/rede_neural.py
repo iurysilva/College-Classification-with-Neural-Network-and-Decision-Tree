@@ -20,7 +20,6 @@ class Rede_Neural:
         self.valor_esperado = None
         self.learning_rate = 1
         self.linha_atual = None
-        self.quantidade_de_linhas_para_ler = None
 
     def mostra_informacoes_das_camadas(self):
         print('')
@@ -65,7 +64,7 @@ class Rede_Neural:
         for saida in range(self.num_saidas):
             atributo = self.atributos_de_saida[saida]
             valor = banco[linha][atributo]
-            print(valor)
+            #print(valor)
             if valor == 'Iris-setosa':
                 valor = 1
             elif valor == 'Iris-versicolor':
@@ -77,7 +76,7 @@ class Rede_Neural:
             self.valor_esperado = sigmoide(valor)
 
     def feedfoward(self):
-        print("lendo linha: ", self.linha_atual)
+        #print("lendo linha: ", self.linha_atual)
         for camada_atual in range(self.numero_camadas-1):
             camada = self.camadas[camada_atual]
             if not camada.final:
@@ -90,8 +89,8 @@ class Rede_Neural:
                 print(camada.neuronios)
                 print('multiplicação das sinapses pelos neuronios: ')
                 print(self.camadas[camada_atual+1].neuronios)'''
-        print("valor na camada final: ", self.camadas[-1].neuronios)
-        print("valor esperado: ", self.valor_esperado, "\n")
+        #print("valor na camada final: ", self.camadas[-1].neuronios)
+        #print("valor esperado: ", self.valor_esperado, "\n")
 
     def testar_feed_foward(self, linha, banco):
         self.banco = banco
@@ -139,11 +138,50 @@ class Rede_Neural:
                 self.inserir_saidas(linha)
                 self.feedfoward()
                 self.backpropagation()
-    '''
-    def treinar(self, tipos_saidas, base_teste):
+
+    def testar(self, tipos_saidas, base_teste):
         matriz_confusao = np.zeros((len(tipos_saidas), len(tipos_saidas)))
         num_linhas = len(base_teste)
-        for i in range(num_linhas):
-            self.testar_feed_foward(i, base_teste)
-            if self.camadas[-1].neuronios[0][0] < (sigmoide(tipos_saidas[0]) + sigmoide(tipos_saidas[1]))/2:
-    '''
+        resultado = None
+        base_numpy = base_teste.values
+
+        for linha in range(num_linhas):
+            self.testar_feed_foward(linha, base_teste)
+
+            valor_1 = sigmoide(tipos_saidas[0])
+            valor_2 = sigmoide(tipos_saidas[1])
+            valor_ultimo = sigmoide(tipos_saidas[-1])
+            valor_penultimo = sigmoide(tipos_saidas[-2])
+
+            if (len(tipos_saidas) == 2):
+                if self.camadas[-1].neuronios[0][0] < ((valor_1 + valor_2) / 2):
+                    resultado = tipos_saidas[0]
+                elif self.camadas[-1].neuronios[0][0] >= ((valor_1 + valor_2) / 2):
+                    resultado = tipos_saidas[-1]
+            else:
+                if self.camadas[-1].neuronios[0][0] < ((valor_1 + valor_2) / 2):
+                    resultado = tipos_saidas[0]
+
+                elif self.camadas[-1].neuronios[0][0] >= ((valor_1 + valor_2) / 2) and self.camadas[-1].neuronios[0][0] < ((valor_ultimo + valor_penultimo) / 2):
+                    for j in range(1, len(tipos_saidas) - 1):
+                        valor_1 = sigmoide(tipos_saidas[j])
+                        valor_2 = sigmoide(tipos_saidas[j - 1])
+                        valor_3 = sigmoide(tipos_saidas[j + 1])
+                        if (self.camadas[-1].neuronios[0][0] >= (valor_1 + valor_2)/2) and (self.camadas[-1].neuronios[0][0] < (valor_1 + valor_3))/2:
+                            resultado = tipos_saidas[j]
+
+                elif self.camadas[-1].neuronios[0][0] >= ((valor_ultimo + valor_penultimo) / 2):
+                    resultado = tipos_saidas[-1]
+
+            matriz_confusao[int(base_numpy[linha][self.atributos_de_saida[0]]-1)][int(resultado)-1] += 1
+
+        print(matriz_confusao)
+        acertos = 0
+        for i in range(3):
+            for j in range(3):
+                if i == j:
+                    acertos += matriz_confusao[i][j]
+        print((acertos*100)/53)
+        return matriz_confusao
+
+
