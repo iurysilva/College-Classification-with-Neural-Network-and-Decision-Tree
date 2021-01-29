@@ -3,16 +3,26 @@ import numpy as np
 import pandas as pd
 
 
-def tratar_bd(banco, coluna):
+def padronizar_saida_iris(lista_saidas):
+    for saida in range(3):
+        if lista_saidas[saida] == 'Iris-setosa':
+            lista_saidas[saida] = 1
+        elif lista_saidas[saida] == 'Iris-versicolor':
+            lista_saidas[saida] = 2
+        elif lista_saidas[saida] == 'Iris-virginica':
+            lista_saidas[saida] = 3
 
+
+def tratar_bd(banco, coluna):
     tipos_saidas = banco[coluna].unique()
+    padronizar_saida_iris(tipos_saidas)
     base_treino = np.array([])
     base_teste = np.array([])
     tamanho_treino = 0
     tamanho_teste = 0
     
     for classe in tipos_saidas:
-        banco_auxiliar = banco.query('%s==%d' %(coluna, classe))
+        banco_auxiliar = banco.query('%s==%d' % (coluna, classe))
         treino_auxiliar = retorna_treino(banco_auxiliar)
         for linha in (treino_auxiliar.values):
             base_treino = np.concatenate((base_treino, linha), axis=0)
