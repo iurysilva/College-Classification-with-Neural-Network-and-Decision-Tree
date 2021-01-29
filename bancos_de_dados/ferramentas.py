@@ -18,6 +18,9 @@ def calcula_resultados(matriz):
     tn = np.zeros([num_classes])
     fn = np.zeros([num_classes])
     fp = np.zeros([num_classes])
+    acertos = 0
+    acuracia = 0
+    total = 0
 
     for classe in range(num_classes):
         for linha in range(num_classes):
@@ -36,13 +39,24 @@ def calcula_resultados(matriz):
     print('FN = ', fn)
     print('FP = ', fp)
 
+    for linha in range(num_classes):
+        for coluna in range(num_classes):
+            if linha == coluna:
+                acertos += matriz[linha][coluna]
+            total += matriz[linha][coluna]
+
+    acuracia = (acertos*100)/total
+
     for classe in range(num_classes):
         sensibilidade[classe] = tp[classe]/(tp[classe] + fn[classe])
         especificidade[classe] = tn[classe]/(tn[classe] + fp[classe])
         confiabilidade_positiva[classe] = tp[classe]/(tp[classe] + fp[classe])
         confiabilidade_negativa[classe] = tn[classe]/(tn[classe] + fn[classe])
-        print('----------- Classe %d -----------' %classe)
+        print('----------- Classe %d -----------' %(classe+1))
         print('Sensibilidade: ', sensibilidade[classe])
         print('Especificidade: ', especificidade[classe])
         print('Confiabilidade Positiva: ', confiabilidade_positiva[classe])
         print('Confiabilidade Negativa: ', confiabilidade_negativa[classe])
+
+    print(acuracia)
+    return acuracia
