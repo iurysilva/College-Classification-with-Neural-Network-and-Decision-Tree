@@ -5,11 +5,12 @@ import pandas as pd
 
 def tratar_bd(banco, coluna):
     tipos_saidas = banco[coluna].unique()
+    print(tipos_saidas)
     base_treino = np.array([])
     base_teste = np.array([])
     tamanho_treino = 0
     tamanho_teste = 0
-    for classe in (tipos_saidas):
+    for classe in tipos_saidas:
         banco_auxiliar = banco.query('%s==%d' %(coluna, classe))
         treino_auxiliar = retorna_treino(banco_auxiliar)
         for linha in (treino_auxiliar.values):

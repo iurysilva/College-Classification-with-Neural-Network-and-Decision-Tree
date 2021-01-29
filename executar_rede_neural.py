@@ -1,10 +1,9 @@
-from arquiteturas_rede_neural import criar_arquitetura_4
-from arquiteturas_rede_neural import criar_arquitetura_2
+from arquiteturas_rede_neural.arquiteturas import *
 from bancos_de_dados.bd_tratado import *
 
-arquitetura = criar_arquitetura_2()
+arquitetura = criar_arquitetura_vinho()
 num_epocas = 500
-learning_rate = 0.5
+learning_rate = 1
 coluna_alvo = 'vinho'  # continente, vinho, vidro, iris
 
 rede = arquitetura
