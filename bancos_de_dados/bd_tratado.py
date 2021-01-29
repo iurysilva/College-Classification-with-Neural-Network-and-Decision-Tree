@@ -22,4 +22,4 @@ def tratar_bd(banco):
     base_treino = pd.DataFrame(base_treino)
     base_teste = pd.DataFrame(base_teste)
 
-    return base_treino, base_teste
+    return base_treino, base_teste, tipos_saidas

@@ -74,8 +74,6 @@ class Rede_Neural:
                 valor = 3
             else:
                 valor = valor
-            if self.valor_esperado not in self.tipos_saidas:
-                self.tipos_saidas.append(self.valor_esperado)
             self.valor_esperado = sigmoide(valor)
 
     def feedfoward(self):
@@ -95,7 +93,8 @@ class Rede_Neural:
         print("valor na camada final: ", self.camadas[-1].neuronios)
         print("valor esperado: ", self.valor_esperado, "\n")
 
-    def testar_feed_foward(self, linha):
+    def testar_feed_foward(self, linha, banco):
+        self.banco = banco
         self.inserir_entradas(linha)
         self.inserir_saidas(linha)
         self.linha_atual = linha
@@ -130,11 +129,21 @@ class Rede_Neural:
             self.camadas[i-1].sinapses = self.camadas[i-1].sinapses + delta_pesos
             self.camadas[i].erro = erro
 
-    def aprender(self, iteracoes):
-        for iteracoes in range(iteracoes):
-            linha = np.random.randint(self.quantidade_de_linhas_para_ler)
-            self.linha_atual = linha
-            self.inserir_entradas(linha)
-            self.inserir_saidas(linha)
-            self.feedfoward()
-            self.backpropagation()
+    def aprender(self, num_epocas, base_treino):
+        self.banco = base_treino
+        num_linhas = len(base_treino)
+        for epocas in range(num_epocas):
+            for linha in range(num_linhas):
+                self.linha_atual = linha
+                self.inserir_entradas(linha)
+                self.inserir_saidas(linha)
+                self.feedfoward()
+                self.backpropagation()
+    '''
+    def treinar(self, tipos_saidas, base_teste):
+        matriz_confusao = np.zeros((len(tipos_saidas), len(tipos_saidas)))
+        num_linhas = len(base_teste)
+        for i in range(num_linhas):
+            self.testar_feed_foward(i, base_teste)
+            if self.camadas[-1].neuronios[0][0] < (sigmoide(tipos_saidas[0]) + sigmoide(tipos_saidas[1]))/2:
+    '''
