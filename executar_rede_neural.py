@@ -13,4 +13,5 @@ banco = rede.banco
 base_treino, base_teste, tipos_saidas = tratar_bd(banco, coluna_alvo)
 base_treino = base_treino.sample(frac=1).reset_index(drop=True)
 rede.aprender(num_epocas, base_treino)
-rede.testar(tipos_saidas, base_teste)
+matriz = rede.testar(tipos_saidas, base_teste)
+calcula_resultados(matriz)

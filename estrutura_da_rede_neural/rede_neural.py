@@ -174,8 +174,6 @@ class Rede_Neural:
                     resultado = np.where(tipos_saidas == tipos_saidas[-1])
 
             valor_teste = np.where(tipos_saidas == base_numpy[linha][self.atributos_de_saida[0]])
-            print(valor_teste[0])
-            print(resultado[0])
             matriz_confusao[int(valor_teste[0])][int(resultado[0])] += 1
             print()
 
