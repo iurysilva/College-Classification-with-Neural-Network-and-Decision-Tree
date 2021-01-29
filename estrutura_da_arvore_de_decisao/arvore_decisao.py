@@ -1,22 +1,42 @@
 import math
+from bancos_de_dados.bd_tratado import tratar_bd
 from collections import Counter
 
 
+class No(object):
+    def __init__(self, nome, folha=False):
+        self.nome = nome
+        self.folha = folha
+        self.filhos = []
+
 class Arvore_Decisao(object):
         
-    def __init__(self, banco_de_dados, numero_amostras):
+    def __init__(self, banco_de_dados, coluna_alvo, amostra=False):
         
-        self.numero_amostras = numero_amostras
-        self.bd = banco_de_dados.drop(columns=['name','religion']).head(self.numero_amostras)
-        self.alvo = banco_de_dados['religion'].head(self.numero_amostras)
+        base_treino, base_teste, tipos_saidas = tratar_bd(banco_de_dados,coluna_alvo)
+        
+        self.numero_amostras = base_treino.shape[0]
+        
+        if not amostra:
+            self.bd = base_treino
+            self.alvo = banco_de_dados[coluna_alvo]
+        else:
+            self.bd = base_treino.sample(self.amostra, random_state=42)
+            self.alvo = banco_de_dados[coluna_alvo].sample(self.amostra, random_state=42)
         
         self.entropia_bd = self.calcula_entropia([contagem['freq'] for contagem in self.contagem(self.alvo).values()])
         self.ganhos = {}
         self.razao_ganhos = {}
         
-        for atributo in ['stripes','bars','circles','crosses']:
+        self.arvore = self.cria_arvore()
+        
+        for atributo in base_treino.columns[1:]:
             self.calcula_ganho(atributo)
             self.calcula_razao_ganho(atributo)
+            
+    
+    def cria_arvore(self):
+        pass
     
     
     def contagem(self, series):
@@ -76,3 +96,11 @@ class Arvore_Decisao(object):
         
         razao_ganho = self.ganhos[atributo] / divisao_informacao
         self.razao_ganhos[atributo] = razao_ganho
+
+
+    def melhor_atributo(self,dicionario):
+        assert type(dicionario) == dict, "input not dict"
+
+        max_key = max(dicionario, key=lambda k: dicionario[k])
+        
+        return max_key

@@ -4,7 +4,7 @@ import pandas as pd
 
 
 def tratar_bd(banco, coluna):
-    print(coluna)
+
     tipos_saidas = banco[coluna].unique()
     base_treino = np.array([])
     base_teste = np.array([])
