@@ -162,15 +162,14 @@ class Arvore_Decisao(object):
     
     def percorre_arvore(self, linha, no_pai):
         if type(no_pai) == Folha:
-            return 'cheguei no fim' # no_pai.classe
+            return no_pai.classe
         else:
             indice_pergunta = list(self.banco_de_dados.columns).index(no_pai.pergunta.coluna)
             if linha[indice_pergunta] >= no_pai.pergunta.valor:
-                print('direita', no_pai.filho_esq, '/////', no_pai, '/////', no_pai.filho_dir)
-                self.percorre_arvore(linha, no_pai.filho_dir)
+
+                return self.percorre_arvore(linha, no_pai.filho_dir)
             else:
-                print('esquerda', no_pai.filho_esq, '/////', no_pai, '/////', no_pai.filho_dir)
-                self.percorre_arvore(linha, no_pai.filho_esq)
+                return self.percorre_arvore(linha, no_pai.filho_esq)
 
     def classifica(self):
 
