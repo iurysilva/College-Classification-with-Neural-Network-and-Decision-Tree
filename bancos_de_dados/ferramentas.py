@@ -34,10 +34,10 @@ def calcula_resultados(matriz):
                 elif classe == coluna != linha:
                     fp[classe] += matriz[linha][coluna]
 
-    print('TP = ', tp)
+    '''print('TP = ', tp)
     print('TN = ', tn)
     print('FN = ', fn)
-    print('FP = ', fp)
+    print('FP = ', fp)'''
 
     for linha in range(num_classes):
         for coluna in range(num_classes):
@@ -61,11 +61,15 @@ def calcula_resultados(matriz):
         if tn[classe] + fn[classe] == 0:
             confiabilidade_negativa[classe] = 0
 
-        print('----------- Classe %d -----------' %(classe+1))
+        '''print('----------- Classe %d -----------' %(classe+1))
         print('Sensibilidade: ', sensibilidade[classe])
         print('Especificidade: ', especificidade[classe])
         print('Confiabilidade Positiva: ', confiabilidade_positiva[classe])
-        print('Confiabilidade Negativa: ', confiabilidade_negativa[classe])
+        print('Confiabilidade Negativa: ', confiabilidade_negativa[classe])'''
+    print('Media da Sensibilidade: ', np.median(sensibilidade))
+    print('Media da Especificidade: ', np.median(especificidade))
+    print('Media da Confiabilidade Positiva: ', np.median(confiabilidade_positiva))
+    print('Media da Confiabilidade Negativa: ', np.median(confiabilidade_negativa))
 
     print(acuracia)
     print('')

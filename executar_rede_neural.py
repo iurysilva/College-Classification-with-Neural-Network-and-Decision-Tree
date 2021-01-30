@@ -5,7 +5,7 @@ import numpy as np
 
 arquitetura = criar_arquitetura_vinho()
 num_epocas = 500
-learning_rate = 0.1
+learning_rate = 1
 
 rede = arquitetura
 rede.learning_rate = learning_rate
@@ -20,6 +20,9 @@ acuracia_total = np.zeros(10)
 for execucao in range(10):
     print('\nexecução : ', execucao)
     tempo_inicial = time.perf_counter()
+    rede = arquitetura
+    rede.learning_rate = learning_rate
+    rede.insere_sinapses_e_bias()
 
     base_treino, base_teste, tipos_saidas = tratar_bd(banco, coluna_alvo)
     base_treino = base_treino.sample(frac=1).reset_index(drop=True)
