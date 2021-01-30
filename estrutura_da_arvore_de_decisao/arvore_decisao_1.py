@@ -163,10 +163,13 @@ class Arvore_Decisao(object):
         return list(map(int, Counter(['%d' % elem for elem in list(Counter(banco).keys())])))
     
     def percorre_arvore(self, linha, no_pai):
-        if linha[no_pai.pergunta.coluna] >= no_pai.pergunta.valor:
-            self.percorre_arvore(linha, no_pai.filho_dir)
+        if type(no_pai) == Folha:
+            return no_pai.classe
         else:
-            self.percorre_arvore(linha, no_pai.filho_esq)
+            if linha[no_pai.pergunta.coluna] >= no_pai.pergunta.valor:
+                self.percorre_arvore(linha, no_pai.filho_dir)
+            else:
+                self.percorre_arvore(linha, no_pai.filho_esq)
 
     def classifica(self):
         for index, linha in self.banco_de_dados.iterrows():

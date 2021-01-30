@@ -13,3 +13,4 @@ ad = Arvore_Decisao(base_treino, coluna_alvo)
 # altura = ad.altura()
 # print(altura)
 
+predicao = ad.classifica()
