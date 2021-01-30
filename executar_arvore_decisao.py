@@ -1,4 +1,4 @@
-from estrutura_da_arvore_de_decisao import Arvore_Decisao, Pergunta
+from estrutura_da_arvore_de_decisao import Arvore_Decisao, Pergunta, Folha
 from bancos_de_dados import bd_vinho
 from bancos_de_dados.bd_tratado import tratar_bd
 

@@ -1,4 +1,3 @@
-from estrutura_da_arvore_de_decisao.arvore_decisao import Pergunta
 import math
 import pandas as pd
 import numpy as np
@@ -167,8 +166,10 @@ class Arvore_Decisao(object):
         else:
             indice_pergunta = list(self.banco_de_dados.columns).index(no_pai.pergunta.coluna)
             if linha[indice_pergunta] >= no_pai.pergunta.valor:
+                print('direita', no_pai.filho_esq, '/////', no_pai, '/////', no_pai.filho_dir)
                 self.percorre_arvore(linha, no_pai.filho_dir)
             else:
+                print('esquerda', no_pai.filho_esq, '/////', no_pai, '/////', no_pai.filho_dir)
                 self.percorre_arvore(linha, no_pai.filho_esq)
 
     def classifica(self):
@@ -177,7 +178,7 @@ class Arvore_Decisao(object):
 
         for index, linha in self.banco_de_dados.iterrows():
             classe = self.percorre_arvore(linha, self.raiz)
-            print(classe)
+            print(classe);exit(1)
             serie_predicao.append(classe)
 
         predicao = pd.concat([self.banco_de_dados[self.coluna_alvo], serie_predicao], axis=1)
