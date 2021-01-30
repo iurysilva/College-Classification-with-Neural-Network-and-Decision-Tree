@@ -7,7 +7,7 @@ import statistics as st
 
 
 class No(object):
-    def __init__(self, nome=None, entropia=None, pergunta=None, filhos=[None, None], folha=False):
+    def __init__(self, nome=None, entropia=None, pergunta=None, filhos=[None, None]):
         
         #self.no_pai = no_pai
         self.nome = nome
@@ -15,7 +15,6 @@ class No(object):
         self.pergunta = pergunta
         self.filho_esq = filhos[0]
         self.filho_dir = filhos[1]
-        self.folha = folha
     
     def __repr__(self):
         return '{} - {} - {}'.format(self.nome, self.entropia, self.pergunta)
@@ -25,9 +24,9 @@ class Folha():
     def __init__(self, banco, alvo):
         self.banco = banco
         self.alvo = alvo
-        self.filho_esq = None
-        self.filho_dir = None
-        self.classe = st.mode(self.banco[self.alvo])
+        self.filho_esq = 'fio esq' #None
+        self.filho_dir = 'fio dir' #None
+        self.classe = 'peguei a classe'   #st.mode(self.banco[self.alvo])
 
 
 class Arvore_Decisao(object):
@@ -164,18 +163,26 @@ class Arvore_Decisao(object):
     
     def percorre_arvore(self, linha, no_pai):
         if type(no_pai) == Folha:
-            return no_pai.classe
+            return 'cheguei no fim' # no_pai.classe
         else:
-            if linha[no_pai.pergunta.coluna] >= no_pai.pergunta.valor:
+            indice_pergunta = list(self.banco_de_dados.columns).index(no_pai.pergunta.coluna)
+            if linha[indice_pergunta] >= no_pai.pergunta.valor:
                 self.percorre_arvore(linha, no_pai.filho_dir)
             else:
                 self.percorre_arvore(linha, no_pai.filho_esq)
 
     def classifica(self):
+
+        serie_predicao = pd.Series([], name='predicao')
+
         for index, linha in self.banco_de_dados.iterrows():
             classe = self.percorre_arvore(linha, self.raiz)
-            self.banco_de_dados['predicao'][index] = classe
-        return self.banco_de_dados[self.alvo, 'predicao']
+            print(classe)
+            serie_predicao.append(classe)
+
+        predicao = pd.concat([self.banco_de_dados[self.coluna_alvo], serie_predicao], axis=1)
+
+        return predicao
 
 
 class Pergunta(object):
