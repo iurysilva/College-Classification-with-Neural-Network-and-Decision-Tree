@@ -59,4 +59,5 @@ def calcula_resultados(matriz):
         print('Confiabilidade Negativa: ', confiabilidade_negativa[classe])
 
     print(acuracia)
+    print('')
     return acuracia
