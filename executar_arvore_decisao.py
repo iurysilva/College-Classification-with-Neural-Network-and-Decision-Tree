@@ -30,7 +30,7 @@ for execucao in range(n_execucoes):
 
             matriz_confusao[valor_predicao][valor_real] += 1
 
-        acuracias[nome_banco].append(calcula_resultados(matriz_confusao))
+        acuracias[nome_banco].append(calcula_resultados(matriz_confusao,True))
 
 acuracia_bdteste = f"Desvio Padrão das Acurácias da base de teste: {np.std(acuracias['Base Teste']):.2f} // Média das Acurácias da base de teste: {np.mean(acuracias['Base Teste']):.2f}%"
 acuracia_bdtreino = f"Desvio Padrão das Acurácias da base de treino: {np.std(acuracias['Base Treino']):.2f} // Média das Acurácias da base de treino: {np.mean(acuracias['Base Treino']):.2f}%"

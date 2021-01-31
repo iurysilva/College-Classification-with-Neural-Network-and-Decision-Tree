@@ -34,8 +34,8 @@ class ArvoreDecisao(object):
     def altura_recursiva(self, no_atual, altura_atual):
         if not no_atual:
             return altura_atual
-        altura_esq = self.altura_recursiva(no_atual.filho_esq, altura_atual + 1)
-        altura_dir = self.altura_recursiva(no_atual.filho_dir, altura_atual + 1)
+        altura_esq = self.altura_recursiva(no_atual.filho_esquerdo, altura_atual + 1)
+        altura_dir = self.altura_recursiva(no_atual.filho_direito, altura_atual + 1)
         return max(altura_esq, altura_dir)
 
 
@@ -47,18 +47,18 @@ class ArvoreDecisao(object):
         
         no = self.verifica_melhor_corte(banco)
 
-        numero_classes_esq = len(np.unique(no.filho_esq[self.coluna_alvo]))
-        numero_classes_dir = len(np.unique(no.filho_dir[self.coluna_alvo]))
+        numero_classes_esq = len(np.unique(no.filho_esquerdo[self.coluna_alvo]))
+        numero_classes_dir = len(np.unique(no.filho_direito[self.coluna_alvo]))
         
         if numero_classes_esq != 1:
-            no.filho_esq = self.cria_arvore_recursiva(no.filho_esq)
+            no.filho_esquerdo = self.cria_arvore_recursiva(no.filho_esquerdo)
         else:
-            no.filho_esq = Folha(no.filho_esq, self.coluna_alvo)
+            no.filho_esquerdo = Folha(no.filho_esquerdo, self.coluna_alvo)
 
         if numero_classes_dir != 1:
-            no.filho_dir = self.cria_arvore_recursiva(no.filho_dir)
+            no.filho_direito = self.cria_arvore_recursiva(no.filho_direito)
         else:
-            no.filho_dir = Folha(no.filho_dir, self.coluna_alvo)
+            no.filho_direito = Folha(no.filho_direito, self.coluna_alvo)
             
         return no
 
@@ -143,7 +143,7 @@ class ArvoreDecisao(object):
     
     def percorre_arvore(self, linha, no_pai):
 
-        if type(no_pai) == Folha:
+        if isinstance(no_pai, Folha):
             return no_pai.classe
 
         else:
@@ -159,7 +159,7 @@ class ArvoreDecisao(object):
 
         serie_predicao = []
 
-        for index, linha in banco.iterrows():
+        for _, linha in banco.iterrows():
             classe = self.percorre_arvore(linha, self.raiz)
             serie_predicao.append(classe)
 
@@ -171,16 +171,16 @@ class ArvoreDecisao(object):
 
 class No(object):
     
-    def __init__(self, nome=None, entropia=None, pergunta=None, filhos=[None, None]):
+    def __init__(self, atributo=None, entropia=None, pergunta=None, filho_esquerdo=None, filho_direito=None):
         
-        self.nome = nome
+        self.atributo = atributo
         self.entropia = entropia
         self.pergunta = pergunta
-        self.filho_esq = filhos[0]
-        self.filho_dir = filhos[1]
+        self.filho_esquerdo = filho_esquerdo
+        self.filho_direito = filho_direito
     
     def __repr__(self):
-        return '{} - {} - {}'.format(self.nome, self.entropia, self.pergunta)
+        return '{} - {} - {}'.format(self.atributo, self.entropia, self.pergunta)
 
 
 class Folha(object):
@@ -188,8 +188,8 @@ class Folha(object):
     def __init__(self, banco, alvo):
         self.banco = banco
         self.alvo = alvo
-        self.filho_esq = None
-        self.filho_dir = None
+        self.filho_esquerdo = None
+        self.filho_direito = None
         self.classe = st.mode(self.banco[self.alvo])
     
     def __repr__(self):

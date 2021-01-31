@@ -57,6 +57,7 @@ def calcula_resultados(matriz, verbose=False):
         especificidade[classe] = tn[classe]/(tn[classe] + fp[classe])
         confiabilidade_positiva[classe] = tp[classe]/(tp[classe] + fp[classe])
         confiabilidade_negativa[classe] = tn[classe]/(tn[classe] + fn[classe])
+        
         if tp[classe] + fn[classe] == 0:
             sensibilidade[classe] = 0
         if tn[classe] + fp[classe] == 0:
