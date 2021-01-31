@@ -83,12 +83,12 @@ class ArvoreDecisao(object):
         return no
 
     def verifica_melhor_corte(self, banco):
-        maior_ganho = None
+        maior_ganho = {'Atributo': '', 'Ganho de Informação': 0, 'Pergunta': None}
         filho_esquerdo = None
         filho_direito = None
-        
+
         entropia_pai = self.calcula_entropia(banco)
-        
+
         for coluna in self.colunas[1:]:
             banco_coluna = self.arredonda_float(banco[coluna])
 
@@ -96,10 +96,10 @@ class ArvoreDecisao(object):
                 pergunta = Pergunta(coluna, linha)
                 banco_esquerdo, banco_direito = self.corta_banco(banco, pergunta)
                 ganho_info = self.calcula_ganho_informacao(banco_esquerdo, banco_direito, entropia_pai)
-                if ganho_info > maior_ganho[1]:
+                if ganho_info > maior_ganho['Ganho de Informação']:
                     maior_ganho = {'Atributo': coluna, 'Ganho de Informação': ganho_info, 'Pergunta': pergunta}
                     filho_esquerdo, filho_direito = banco_esquerdo, banco_direito
-                    
+
         return No(atributo=maior_ganho['Atributo'],
                   entropia=entropia_pai,
                   pergunta=maior_ganho['Pergunta'],

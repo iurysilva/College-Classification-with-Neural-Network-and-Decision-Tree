@@ -77,6 +77,7 @@ def calcula_resultados(matriz, verbose=False):
         print('Media da Confiabilidade Positiva: ', np.median(confiabilidade_positiva))
         print('Media da Confiabilidade Negativa: ', np.median(confiabilidade_negativa))
 
-    print('Acurácia:', acuracia, end='')
+    if verbose:
+        print('Acurácia:', acuracia, end='\n')
 
     return acuracia
