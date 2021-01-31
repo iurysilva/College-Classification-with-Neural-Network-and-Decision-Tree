@@ -13,6 +13,13 @@ ad = Arvore_Decisao(base_treino, coluna_alvo)
 # altura = ad.altura()
 # print(altura)
 
-predicao = ad.classifica()
-print(predicao.head())
+predicao = ad.classifica(base_teste)
+print(predicao)
 
+soma = 0
+for index, linha in predicao.iterrows():
+    
+    if linha[0] == linha [1]:
+        soma += 1
+acc = soma/predicao.shape[0]
+print(acc)

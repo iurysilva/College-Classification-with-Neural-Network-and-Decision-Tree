@@ -23,9 +23,9 @@ class Folha():
     def __init__(self, banco, alvo):
         self.banco = banco
         self.alvo = alvo
-        self.filho_esq = 'fio esq' #None
-        self.filho_dir = 'fio dir' #None
-        self.classe = 'peguei a classe'   #st.mode(self.banco[self.alvo])
+        self.filho_esq = None
+        self.filho_dir = None
+        self.classe = st.mode(self.banco[self.alvo])
 
 
 class Arvore_Decisao(object):
@@ -171,16 +171,16 @@ class Arvore_Decisao(object):
             else:
                 return self.percorre_arvore(linha, no_pai.filho_esq)
 
-    def classifica(self):
+    def classifica(self, banco):
 
-        serie_predicao = pd.Series([], name='predicao')
+        serie_predicao = []
 
-        for index, linha in self.banco_de_dados.iterrows():
+        for index, linha in banco.iterrows():
             classe = self.percorre_arvore(linha, self.raiz)
-            print(classe);exit(1)
             serie_predicao.append(classe)
 
-        predicao = pd.concat([self.banco_de_dados[self.coluna_alvo], serie_predicao], axis=1)
+        serie_predicao = pd.Series(serie_predicao, name='predicao')
+        predicao = pd.concat([banco[self.coluna_alvo], serie_predicao], axis=1)
 
         return predicao
 

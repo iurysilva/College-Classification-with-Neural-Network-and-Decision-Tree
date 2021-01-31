@@ -34,7 +34,8 @@ def calcula_resultados(matriz):
                 elif classe == coluna != linha:
                     fp[classe] += matriz[linha][coluna]
 
-    '''print('TP = ', tp)
+    '''
+    print('TP = ', tp)
     print('TN = ', tn)
     print('FN = ', fn)
     print('FP = ', fp)'''
