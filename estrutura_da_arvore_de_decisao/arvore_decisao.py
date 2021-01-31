@@ -5,27 +5,6 @@ from collections import Counter
 import statistics as st
 
 
-class No(object):
-    def __init__(self, atributo=None, entropia=None, pergunta=None, filho_esquerdo=None, filho_direito=None):
-        self.atributo = atributo
-        self.entropia = entropia
-        self.pergunta = pergunta
-        self.filho_esquerdo = filho_esquerdo
-        self.filho_direito = filho_direito
-    
-    def __repr__(self):
-        return '{} - {} - {}'.format(self.atributo, self.entropia, self.pergunta)
-
-
-class Folha(object):
-    def __init__(self, banco, alvo):
-        self.banco = banco
-        self.alvo = alvo
-        self.filho_esquerdo = None
-        self.filho_direito = None
-        self.classe = st.mode(self.banco[self.alvo])
-
-
 class ArvoreDecisao(object):
         
     def __init__(self, banco_de_dados, coluna_alvo):
@@ -43,46 +22,48 @@ class ArvoreDecisao(object):
         
         self.cria_arvore()
 
+
     def __repr__(self):
         return 'Linhas:{}\nColunas:{}'.format(self.n_linhas, self.n_colunas)
     
+    
     def altura(self):
-        return self._altura(self.raiz, 0)
-        
-    def _altura(self, no_atual, altura_atual):
+        return self.altura_recursiva(self.raiz, 0)
+
+
+    def altura_recursiva(self, no_atual, altura_atual):
         if not no_atual:
             return altura_atual
-        altura_esq = self._altura(no_atual.filho_esquerdo, altura_atual + 1)
-        altura_dir = self._altura(no_atual.filho_direito, altura_atual + 1)
+        altura_esq = self.altura_recursiva(no_atual.filho_esq, altura_atual + 1)
+        altura_dir = self.altura_recursiva(no_atual.filho_dir, altura_atual + 1)
         return max(altura_esq, altura_dir)
 
+
     def cria_arvore(self):
-        self.raiz = self.cria_arvore_recursiva(banco=self.banco_de_dados)
+        self.raiz = self.cria_arvore_recursiva(self.banco_de_dados)
+
 
     def cria_arvore_recursiva(self, banco):
         
         no = self.verifica_melhor_corte(banco)
 
-        n_ocorrencias_classe_esquerda = list(Counter(no.filho_esquerdo[self.coluna_alvo]).values())
+        numero_classes_esq = len(np.unique(no.filho_esq[self.coluna_alvo]))
+        numero_classes_dir = len(np.unique(no.filho_dir[self.coluna_alvo]))
         
-        n_ocorrencias_classe_direita = list(Counter(no.filho_direito[self.coluna_alvo]).values())
-        
-        '''
-        CONDIÇÃO DE PARADA
-        '''
-        if len(n_ocorrencias_classe_esquerda) != 1:
-            no.filho_esquerdo = self.cria_arvore_recursiva(no.filho_esquerdo)
+        if numero_classes_esq != 1:
+            no.filho_esq = self.cria_arvore_recursiva(no.filho_esq)
         else:
-            no.filho_esquerdo = Folha(no.filho_esquerdo, self.coluna_alvo)
+            no.filho_esq = Folha(no.filho_esq, self.coluna_alvo)
 
-        if len(n_ocorrencias_classe_direita) != 1:
-            no.filho_direito = self.cria_arvore_recursiva(no.filho_direito)
+        if numero_classes_dir != 1:
+            no.filho_dir = self.cria_arvore_recursiva(no.filho_dir)
         else:
-            no.filho_direito = Folha(no.filho_direito, self.coluna_alvo)
+            no.filho_dir = Folha(no.filho_dir, self.coluna_alvo)
             
         return no
 
     def verifica_melhor_corte(self, banco):
+        
         maior_ganho = {'Atributo': '', 'Ganho de Informação': 0, 'Pergunta': None}
         filho_esquerdo = None
         filho_direito = None
@@ -105,6 +86,7 @@ class ArvoreDecisao(object):
                   pergunta=maior_ganho['Pergunta'],
                   filho_esquerdo=filho_esquerdo,
                   filho_direito=filho_direito)
+
 
     def calcula_entropia(self, banco):
         
@@ -187,25 +169,52 @@ class ArvoreDecisao(object):
         return predicao
 
 
+class No(object):
+    
+    def __init__(self, nome=None, entropia=None, pergunta=None, filhos=[None, None]):
+        
+        self.nome = nome
+        self.entropia = entropia
+        self.pergunta = pergunta
+        self.filho_esq = filhos[0]
+        self.filho_dir = filhos[1]
+    
+    def __repr__(self):
+        return '{} - {} - {}'.format(self.nome, self.entropia, self.pergunta)
+
+
+class Folha(object):
+    
+    def __init__(self, banco, alvo):
+        self.banco = banco
+        self.alvo = alvo
+        self.filho_esq = None
+        self.filho_dir = None
+        self.classe = st.mode(self.banco[self.alvo])
+    
+    def __repr__(self):
+        return '{}'.format(self.classe)
+
+
 class Pergunta(object):
 
     def __init__(self, coluna, valor):
         self.coluna = coluna
         self.valor = valor
 
-    def is_numeric(self, valor):
+    def numerico(self, valor):
         return isinstance(valor, int) or isinstance(valor, float)
 
     def verifica(self, exemplo):
         valor = exemplo[self.coluna]
 
-        if self.is_numeric(valor):
+        if self.numerico(valor):
             return valor >= self.valor
         else:
             return valor == self.valor
 
     def __repr__(self):
         condicao = "=="
-        if self.is_numeric(self.valor):
-            condicao= ">="
+        if self.numerico(self.valor):
+            condicao = ">="
         return "%s %s %s?" % (self.coluna, condicao, str(self.valor))

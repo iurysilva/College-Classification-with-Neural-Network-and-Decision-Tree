@@ -9,6 +9,7 @@ def retorna_teste(base, base_treino):
     return teste
 
 def calcula_resultados(matriz, verbose=False):
+    
     num_classes = len(matriz)
 
     sensibilidade = np.zeros([num_classes])
@@ -72,10 +73,10 @@ def calcula_resultados(matriz, verbose=False):
             print('Confiabilidade Positiva: ', confiabilidade_positiva[classe])
             print('Confiabilidade Negativa: ', confiabilidade_negativa[classe])
     if verbose:
-        print('Media da Sensibilidade: ', np.median(sensibilidade))
-        print('Media da Especificidade: ', np.median(especificidade))
-        print('Media da Confiabilidade Positiva: ', np.median(confiabilidade_positiva))
-        print('Media da Confiabilidade Negativa: ', np.median(confiabilidade_negativa))
+        print('Media da Sensibilidade: ', np.mean(sensibilidade))
+        print('Media da Especificidade: ', np.mean(especificidade))
+        print('Media da Confiabilidade Positiva: ', np.mean(confiabilidade_positiva))
+        print('Media da Confiabilidade Negativa: ', np.mean(confiabilidade_negativa))
 
     if verbose:
         print('Acurácia:', acuracia, end='\n')
