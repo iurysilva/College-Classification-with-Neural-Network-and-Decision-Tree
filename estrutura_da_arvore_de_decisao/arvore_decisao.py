@@ -30,6 +30,7 @@ class ArvoreDecisao(object):
     def altura(self):
         return self._altura_recursiva(self.raiz, 0)
 
+
     def _altura_recursiva(self, no_atual, altura_atual):
         if not no_atual:
             return altura_atual
@@ -37,13 +38,15 @@ class ArvoreDecisao(object):
         altura_direito = self._altura_recursiva(no_atual.filho_direito, altura_atual + 1)
         return max(altura_esquerdo, altura_direito)
 
+
     def cria_arvore(self):
         self.raiz = self._cria_arvore_recursiva(self.banco_de_dados)
+
 
     def _cria_arvore_recursiva(self, banco):
         
         no = self.verifica_melhor_corte(banco)
-
+        
         n_ocorrencias_classes_esquerda = list(Counter(no.filho_esquerdo[self.coluna_alvo]).values())
         n_classes_esquerda = len(list(Counter(no.filho_esquerdo[self.coluna_alvo]).values()))
 
@@ -51,28 +54,30 @@ class ArvoreDecisao(object):
         n_classes_direita = len(list(Counter(no.filho_direito[self.coluna_alvo]).values()))
 
         dominancia_esquerda = 0
+        dominancia_direita = 0
+        
         for index_classe in range(n_classes_esquerda):
             dominancia_atual = n_ocorrencias_classes_esquerda[index_classe] / sum(n_ocorrencias_classes_esquerda)
             if dominancia_atual > dominancia_esquerda:
                 dominancia_esquerda = dominancia_atual
-
-        dominancia_direita = 0
+        
         for index_classe in range(n_classes_direita):
             dominancia_atual = n_ocorrencias_classes_direita[index_classe] / sum(n_ocorrencias_classes_direita)
             if dominancia_atual > dominancia_direita:
                 dominancia_direita = dominancia_atual
-
-        if n_classes_esquerda != 1 or dominancia_esquerda < 0.8:
+                
+        if dominancia_esquerda < 0.8:
             no.filho_esquerdo = self._cria_arvore_recursiva(no.filho_esquerdo)
         else:
             no.filho_esquerdo = Folha(no.filho_esquerdo, self.coluna_alvo)
 
-        if n_classes_direita != 1 or dominancia_direita < 0.8:
+        if dominancia_direita < 0.8:
             no.filho_direito = self._cria_arvore_recursiva(no.filho_direito)
         else:
             no.filho_direito = Folha(no.filho_direito, self.coluna_alvo)
             
         return no
+
 
     def verifica_melhor_corte(self, banco):
         
@@ -84,8 +89,8 @@ class ArvoreDecisao(object):
 
         for coluna in self.colunas[1:]:
             banco_coluna = self.arredonda_float(banco[coluna])
-
-            for linha in banco_coluna[:-1]:
+            #banco_coluna = banco[coluna] para execução sem arredondamento
+            for linha in banco_coluna:
                 pergunta = Pergunta(coluna, linha)
                 banco_esquerdo, banco_direito = self.corta_banco(banco, pergunta)
                 ganho_info = self.calcula_ganho_informacao(banco_esquerdo, banco_direito, entropia_pai)
@@ -114,6 +119,7 @@ class ArvoreDecisao(object):
             
         return entropia
 
+
     def calcula_ganho_informacao(self, banco_esquerdo, banco_direito, entropia_pai):
         
         ganho_informacao = 0
@@ -133,6 +139,7 @@ class ArvoreDecisao(object):
         
         return entropia_pai - ganho_informacao
 
+
     def corta_banco(self, banco, pergunta):
         
         linha_true, linha_false = [], []
@@ -150,8 +157,10 @@ class ArvoreDecisao(object):
         
         return banco_esquerdo, banco_direito
 
+
     def arredonda_float(self, banco):
         return list(map(int, Counter(['%d' % elem for elem in list(Counter(banco).keys())])))
+    
     
     def percorre_arvore(self, linha, no_pai):
 
@@ -166,6 +175,7 @@ class ArvoreDecisao(object):
 
             else:
                 return self.percorre_arvore(linha, no_pai.filho_esquerdo)
+
 
     def classifica(self, banco):
 
@@ -224,6 +234,7 @@ class Pergunta(object):
             return valor >= self.valor
         else:
             return valor == self.valor
+
 
     def __repr__(self):
         condicao = "=="
