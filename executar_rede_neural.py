@@ -4,8 +4,9 @@ import time
 import numpy as np
 
 arquitetura = criar_arquitetura_vinho()
-num_epocas = 3000
+num_epocas = 600
 learning_rate = 0.3
+num_execucoes = 10
 
 rede = arquitetura
 rede.learning_rate = learning_rate
@@ -14,10 +15,10 @@ coluna_alvo = rede.banco.columns[rede.atributos_de_saida[0]]  # continente, Vinh
 banco = rede.banco
 tempos = np.array([])
 
-acuracia_treino = np.zeros(10)
-acuracia_teste = np.zeros(10)
-acuracia_total = np.zeros(10)
-for execucao in range(10):
+acuracia_treino = np.zeros(num_execucoes)
+acuracia_teste = np.zeros(num_execucoes)
+acuracia_total = np.zeros(num_execucoes)
+for execucao in range(num_execucoes):
     print('\nexecução : ', execucao)
     tempo_inicial = time.perf_counter()
     rede = arquitetura
