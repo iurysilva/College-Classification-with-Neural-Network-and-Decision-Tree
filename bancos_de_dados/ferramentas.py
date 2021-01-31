@@ -8,16 +8,19 @@ def retorna_teste(base, base_treino):
     teste = base.drop(base_treino.index)
     return teste
 
-def calcula_resultados(matriz):
+def calcula_resultados(matriz, verbose=False):
     num_classes = len(matriz)
+
     sensibilidade = np.zeros([num_classes])
     especificidade = np.zeros([num_classes])
     confiabilidade_positiva = np.zeros([num_classes])
     confiabilidade_negativa = np.zeros([num_classes])
+
     tp = np.zeros([num_classes])
     tn = np.zeros([num_classes])
     fn = np.zeros([num_classes])
     fp = np.zeros([num_classes])
+
     acertos = 0
     acuracia = 0
     total = 0
@@ -34,11 +37,11 @@ def calcula_resultados(matriz):
                 elif classe == coluna != linha:
                     fp[classe] += matriz[linha][coluna]
 
-    '''
-    print('TP = ', tp)
-    print('TN = ', tn)
-    print('FN = ', fn)
-    print('FP = ', fp)'''
+    if verbose:
+        print('TP =', tp)
+        print('TN =', tn)
+        print('FN =', fn)
+        print('FP =', fp)
 
     for linha in range(num_classes):
         for coluna in range(num_classes):
@@ -62,16 +65,18 @@ def calcula_resultados(matriz):
         if tn[classe] + fn[classe] == 0:
             confiabilidade_negativa[classe] = 0
 
-        '''print('----------- Classe %d -----------' %(classe+1))
-        print('Sensibilidade: ', sensibilidade[classe])
-        print('Especificidade: ', especificidade[classe])
-        print('Confiabilidade Positiva: ', confiabilidade_positiva[classe])
-        print('Confiabilidade Negativa: ', confiabilidade_negativa[classe])'''
-    print('Media da Sensibilidade: ', np.median(sensibilidade))
-    print('Media da Especificidade: ', np.median(especificidade))
-    print('Media da Confiabilidade Positiva: ', np.median(confiabilidade_positiva))
-    print('Media da Confiabilidade Negativa: ', np.median(confiabilidade_negativa))
+        if verbose:
+            print('----------- Classe %d -----------' %(classe+1))
+            print('Sensibilidade: ', sensibilidade[classe])
+            print('Especificidade: ', especificidade[classe])
+            print('Confiabilidade Positiva: ', confiabilidade_positiva[classe])
+            print('Confiabilidade Negativa: ', confiabilidade_negativa[classe])
+    if verbose:
+        print('Media da Sensibilidade: ', np.median(sensibilidade))
+        print('Media da Especificidade: ', np.median(especificidade))
+        print('Media da Confiabilidade Positiva: ', np.median(confiabilidade_positiva))
+        print('Media da Confiabilidade Negativa: ', np.median(confiabilidade_negativa))
 
-    print(acuracia)
-    print('')
+    print('Acurácia:', acuracia, end='')
+
     return acuracia
