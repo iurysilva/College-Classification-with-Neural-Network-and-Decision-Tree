@@ -4,8 +4,8 @@ import time
 import numpy as np
 
 arquitetura = criar_arquitetura_vinho()
-num_epocas = 600
-learning_rate = 0.3
+num_epocas = 500
+learning_rate = 1
 num_execucoes = 10
 
 rede = arquitetura
