@@ -35,7 +35,7 @@ acuracia_bdteste = ['Desvio Padrão das Acurácias da base de teste:', np.std(ac
                     '| Média das Acurácias da base de teste:', np.mean(acuracias['Base Teste'])]
 acuracia_bdtreino = ['Desvio Padrão das Acurácias da base de treino:', np.std(acuracias['Base Treino']),
                      '| Média das Acurácias da base de treino:', np.mean(acuracias['Base Treino'])]
-acuracia_bdtotal = ['Desvio Padrão das Acurácias da base total:'np.std(acuracias['Base Total']),
+acuracia_bdtotal = ['Desvio Padrão das Acurácias da base total:', np.std(acuracias['Base Total']),
                     '| Média das Acurácias da base total:', np.mean(acuracias['Base Total'])]
 
 print(acuracia_bdteste)
