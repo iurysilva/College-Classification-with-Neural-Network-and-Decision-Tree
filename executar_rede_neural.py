@@ -4,8 +4,8 @@ import time
 import numpy as np
 
 arquitetura = criar_arquitetura_vinho()
-num_epocas = 500
-learning_rate = 1
+num_epocas = 3000
+learning_rate = 0.3
 
 rede = arquitetura
 rede.learning_rate = learning_rate
@@ -34,15 +34,15 @@ for execucao in range(10):
     tempos = np.append(tempos, time.perf_counter() - tempo_inicial)
 
     print('base de treino: ')
-    acuracia_treino[execucao] = calcula_resultados(matriz_treino)
+    acuracia_treino[execucao] = calcula_resultados(matriz_treino, True)
     print('base de teste: ')
-    acuracia_teste[execucao] = calcula_resultados(matriz_teste)
+    acuracia_teste[execucao] = calcula_resultados(matriz_teste, True)
     print('base inteira: ')
-    acuracia_total[execucao] = calcula_resultados(matriz_total)
+    acuracia_total[execucao] = calcula_resultados(matriz_total, True)
 print('')
-print('media de treino: ', np.median(acuracia_treino))
-print('media de teste: ', np.median(acuracia_teste))
-print('media de total: ', np.median(acuracia_total))
+print('media de treino: ', np.mean(acuracia_treino))
+print('media de teste: ', np.mean(acuracia_teste))
+print('media de total: ', np.mean(acuracia_total))
 print('')
 print('desvio padrão de treino: ', np.std(acuracia_treino))
 print('desvio padrão de teste: ', np.std(acuracia_teste))
