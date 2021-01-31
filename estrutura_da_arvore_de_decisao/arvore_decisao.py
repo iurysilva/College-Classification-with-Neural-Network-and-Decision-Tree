@@ -1,207 +1,209 @@
 import math
 import pandas as pd
 import numpy as np
+from collections import Counter
+import statistics as st
 
 
-class NoDecisao(object):
-    """Registra a partição da árvore em dois novos ramos,
-    tendo a referência da pergunta e dos dois nós filhos.    
-    """
-    def __init__(self, pergunta, ramo_true, ramo_false):
+class No(object):
+    def __init__(self, nome=None, entropia=None, pergunta=None, filhos=[None, None]):
+        
+        #self.no_pai = no_pai
+        self.nome = nome
+        self.entropia = entropia
         self.pergunta = pergunta
-        self.ramo_true = ramo_true
-        self.ramo_false = ramo_false
+        self.filho_esq = filhos[0]
+        self.filho_dir = filhos[1]
+    
+    def __repr__(self):
+        return '{} - {} - {}'.format(self.nome, self.entropia, self.pergunta)
+
+
+class Folha():
+    def __init__(self, banco, alvo):
+        self.banco = banco
+        self.alvo = alvo
+        self.filho_esq = None
+        self.filho_dir = None
+        self.classe = st.mode(self.banco[self.alvo])
 
 
 class Arvore_Decisao(object):
         
     def __init__(self, banco_de_dados, coluna_alvo):
         
-        self.bd = banco_de_dados
-        self.alvo = banco_de_dados[coluna_alvo]
-        self.numero_amostras = banco_de_dados.shape[0]
-        self.numero_atributos = banco_de_dados.shape[1]
+        self.banco_de_dados = banco_de_dados
         
-        self.entropia_bd = self.calcula_entropia([contagem['freq'] for contagem in self.contagem(self.alvo).values()])
-        
-        self.ganhos = {}
-        self.razao_ganhos = {}
+        self.n_colunas = banco_de_dados.shape[1]
+        self.colunas = banco_de_dados.columns
+        self.n_linhas = banco_de_dados.shape[0]
 
+        self.coluna_alvo = coluna_alvo
+        self.dados_alvo = self.banco_de_dados[coluna_alvo]
+
+        self.raiz = None
+        
         self.cria_arvore()
+
+    def __repr__(self):
+        return 'Linhas:{}\nColunas:{}'.format(self.n_linhas, self.n_colunas)
     
-    
+    def altura(self):
+        return self._height(self.raiz, 0)
+        
+    def _height(self, no_atual, altura_atual):
+        if not no_atual:
+            return altura_atual
+        altura_esq = self._height(no_atual.filho_esq, altura_atual + 1)
+        altura_dir = self._height(no_atual.filho_dir, altura_atual + 1)
+        return max(altura_esq, altura_dir)
+
     def cria_arvore(self):
-        
-        for coluna in self.bd.columns[1:]:
-            self.calcula_ganho(coluna)
-        
-        melhor_atributo = self.melhor_atributo(self.ganhos)
+        self.raiz = self.cria_arvore_recursiva(banco=self.banco_de_dados)
 
-        self.cria_arvore_recursiva(self.bd)
-    
-    
-    def cria_arvore_recursiva(self, atributo):
+    def cria_arvore_recursiva(self, banco):
         
-        melhor_ganho = 0 
-        melhor_pergunta = None
-        
-        incerteza_atual = self.calcula_entropia([contagem['freq'] for contagem in self.contagem(atributo).values()])
-        n_atributos = self.numero_atributos
+        no = self.verifica_melhor_corte(banco)
 
-        for coluna in range(n_atributos):
+        numero_ocorrencias_classe_esq = Counter(no.filho_esq[self.coluna_alvo]).values()
+        numero_ocorrencias_classe_esq = list(numero_ocorrencias_classe_esq)
+        
+        numero_ocorrencias_classe_dir = Counter(no.filho_dir[self.coluna_alvo]).values()
+        numero_ocorrencias_classe_dir = list(numero_ocorrencias_classe_dir)
+        
+        '''
+        CONDIÇÃO DE PARADA
+        '''
+        if len(numero_ocorrencias_classe_esq) != 1:
+            no.filho_esq = self.cria_arvore_recursiva(no.filho_esq)
+        else:
+            no.filho_esq = Folha(no.filho_esq, self.coluna_alvo)
+
+        if len(numero_ocorrencias_classe_dir) != 1:
+            no.filho_dir = self.cria_arvore_recursiva(no.filho_dir)
+        else:
+            no.filho_dir = Folha(no.filho_dir, self.coluna_alvo)
             
-            valores = np.unique(atributo.values)
+        return no
 
-            for valor in valores:  # for each value
-
-                pergunta = Pergunta(coluna, valor)
-
-                linha_true, linha_false = self.particao(atributo, pergunta)
-
-                if len(linha_true) == 0 or len(linha_false) == 0:
-                    continue
-
-                ganho = self.ganho_info(linha_true, linha_false, atributo)
-
-                '''
-                if ganho >= melhor_ganho:
-                    melhor_ganho, melhor_pergunta = ganho, pergunta
-
-        return melhor_ganho, melhor_pergunta'''
-    
-    
-    def contagem_atributo(self, series):
+    def verifica_melhor_corte(self, banco):
         
-        contagem_dict = {}
-        for index, item in enumerate(series):
-            if item not in contagem_dict:
-                contagem_dict[item] = {'freq': 1, self.alvo[index]: 1}
-            elif self.alvo[index] not in contagem_dict[item]:
-                contagem_dict[item][self.alvo[index]] = 1
-                contagem_dict[item]['freq'] += 1
-            else:
-                contagem_dict[item][self.alvo[index]] += 1
-                contagem_dict[item]['freq'] += 1
-        return contagem_dict
-    
-    
-    def calcula_entropia(self, valores):
+        no = No()
+        maior_ganho = ('Coluna', 0)
+        filho_esq = None
+        filho_dir = None
+        
+        entropia_pai = self.calcula_entropia(banco)
+        
+        for coluna in self.colunas[1:]:
+            banco_coluna = self.arredonda_float(banco[coluna])
+            for linha in banco_coluna[:-1]:
+                # for linha in banco[coluna]:
+                pergunta = Pergunta(coluna, linha)
+                banco_esq, banco_dir = self.corta_banco(banco, pergunta)
+                ganho_info = self.calcula_ganho_informacao(banco_esq, banco_dir, entropia_pai)
+                if ganho_info > maior_ganho[1]:
+                    maior_ganho = (coluna, ganho_info, pergunta)
+                    filho_esq, filho_dir = banco_esq, banco_dir
+                    
+        return No(maior_ganho[0], entropia_pai, maior_ganho[2], [filho_esq, filho_dir])
 
+    def calcula_entropia(self, banco):
+        
         entropia = 0
-        for contagem in valores:
-            cardinalidade = (contagem / self.numero_amostras)
-            entropia += - cardinalidade * math.log(cardinalidade, 2)
-            #print('-({}/{})log({}/{}) = {}'.format(contagem, self.numero_amostras,contagem, self.numero_amostras,
-            #                                       - cardinalidade * math.log(cardinalidade, 2)))
-        return entropia
         
-    
-    def calcula_ganho(self, atributo):
-        
-        contagem_atributo = self.contagem_atributo(self.bd[f'{atributo}'])
+        numero_ocorrencias_classe = Counter(banco[self.coluna_alvo]).values()
+        numero_ocorrencias_classe = list(numero_ocorrencias_classe)
 
-        ganho_atributo = 0
-        for contagem in contagem_atributo.values():
-            cardinalidade = (contagem['freq'] / self.numero_amostras)
-            ganho_atributo += cardinalidade * self.calcula_entropia([*contagem.values()][1:])
+        numero_linhas = banco.shape[0]
+        
+        for contagem in numero_ocorrencias_classe:
+            peso = (contagem / numero_linhas)
+            entropia += - peso * math.log(peso, 2)
             
-        ganho_atributo = self.entropia_bd - ganho_atributo
+        return entropia
+
+    def calcula_ganho_informacao(self, banco_esq, banco_dir, entropia_pai):
         
-        self.ganhos[atributo] = ganho_atributo
-
-
-    def ganho_info(self, esquerda, direita, atributo):
-        contagem_esquerda = self.contagem_atributo(esquerda).values()
-        contagem_direita = self.contagem_atributo(direita).values()
-        contagem_atributo = self.contagem_atributo(atributo).values()
-        print(contagem_esquerda)
-        p = float(esquerda.shape[0] / self.numero_amostras)
-        #esquerda = [*(self.contagem_atributo(esquerda).values())][1:]
-        #direita = [*(self.contagem_atributo(direita).values()).values()][1:]]
-        #atributo = [*(self.contagem_atributo(atributo).values()).values()][1:]
-        #return self.calcula_entropia(atributo) - p * self.calcula_entropia(esquerda) - (1 - p) * self.calcula_entropia(direita)
-
-
-    def melhor_atributo(self,dicionario):
-
-        max_key = max(dicionario, key=lambda k: dicionario[k])
+        ganho_informacao = 0
         
-        return max_key
-
+        numero_amostras = banco_esq.shape[0] + banco_dir.shape[0]
+        peso_esq = banco_esq.shape[0] / numero_amostras
+        peso_dir = banco_dir.shape[0] / numero_amostras
         
-    def particao(self, dataset, pergunta):
-        """Particiona um dataset.
-        Para cada linha do dataset, faz a checagem em relação à pergunta.
-        Se der verdadeiro, a linha é adicionada ao 'linha_true', senão,
-        é adicionada ao 'linha_false'.
-        """
+        if not banco_esq.empty:
+            calculo_esq = peso_esq*self.calcula_entropia(banco_esq)
+        else:
+            calculo_esq = 0
+            
+        calculo_dir = peso_dir*self.calcula_entropia(banco_dir)
+        
+        ganho_informacao = calculo_esq + calculo_dir
+        
+        return entropia_pai - ganho_informacao
+
+    def corta_banco(self, banco, pergunta):
+        
         linha_true, linha_false = [], []
-        for _, row in dataset.iterrows():
-            if pergunta.match(row):
+        
+        for _, row in banco.iterrows():
+            if pergunta.verifica(row):
                 linha_true.append(row)
             else:
                 linha_false.append(row)
-        return pd.DataFrame(linha_true), pd.DataFrame(linha_false)
+        
+        banco_esq = pd.DataFrame(linha_false)
+        banco_dir = pd.DataFrame(linha_true)
+        
+        return banco_esq, banco_dir
 
+    def arredonda_float(self, banco):
+        return list(map(int, Counter(['%d' % elem for elem in list(Counter(banco).keys())])))
+    
+    def percorre_arvore(self, linha, no_pai):
+        if type(no_pai) == Folha:
+            return no_pai.classe
+        else:
+            indice_pergunta = list(self.banco_de_dados.columns).index(no_pai.pergunta.coluna)
+            if linha[indice_pergunta] >= no_pai.pergunta.valor:
 
-    def acha_melhor_particao(self, dataset):
-        """Find the best pergunta to ask by iterating over every feature / value
-        and calculating the information gain."""
-        melhor_ganho = 0  # keep track of the best information gain
-        melhor_pergunta = None  # keep train of the feature / value that produced it
-        incerteza_atual = self.calcula_entropia(dataset)
-        n_atributos = len(dataset[0]) - 1  # number of columns
+                return self.percorre_arvore(linha, no_pai.filho_dir)
+            else:
+                return self.percorre_arvore(linha, no_pai.filho_esq)
 
-        for col in range(n_atributos):  # for each feature
+    def classifica(self, banco):
 
-            values = set([row[col] for row in dataset])  # unique values in the column
+        serie_predicao = []
 
-            for val in values:  # for each value
+        for index, linha in banco.iterrows():
+            classe = self.percorre_arvore(linha, self.raiz)
+            serie_predicao.append(classe)
 
-                pergunta = Pergunta(col, val)
+        serie_predicao = pd.Series(serie_predicao, name='predicao')
+        predicao = pd.concat([banco[self.coluna_alvo], serie_predicao], axis=1)
 
-                # particiona o dataset
-                linha_true, linha_false = self.particao(dataset, pergunta)
-
-                # Skip this split if it doesn't divide the
-                # dataset.
-                if len(linha_true) == 0 or len(linha_false) == 0:
-                    continue
-
-                # Calculate the information gain from this split
-                ganho = self.ganho_info(linha_true, linha_false, col)
-
-                
-                if ganho >= melhor_ganho:
-                    melhor_ganho, melhor_pergunta = ganho, pergunta
-
-        return melhor_ganho, melhor_pergunta
+        return predicao
 
 
 class Pergunta(object):
-    """A pergunta é usada para particionar o dataset.
-
-    This class just records a 'column number' (e.g., 0 for Color) and a
-    'column value' (e.g., Green). The 'match' method is used to compare
-    the feature value in an example to the feature value stored in the
-    pergunta. See the demo below.
-    """
 
     def __init__(self, coluna, valor):
         self.coluna = coluna
         self.valor = valor
 
-    def match(self, linha):
-        # Compare the feature valor in an linha to the
-        # feature valor in this pergunta.
-        val = linha[self.coluna]
-        return val >= self.valor
-        
-    '''
+    def is_numeric(self, valor):
+        return isinstance(valor, int) or isinstance(valor, float)
+
+    def verifica(self, exemplo):
+        valor = exemplo[self.coluna]
+
+        if self.is_numeric(valor):
+            return valor >= self.valor
+        else:
+            return valor == self.valor
+
     def __repr__(self):
-        # This is just a helper method to print
-        # the pergunta in a readable format.
-        condicao = ">="
-        
-        return "Is %s %s %s?" % (
-            self.bd[self.coluna], condicao, str(self.valor))'''
+        condition = "=="
+        if self.is_numeric(self.valor):
+            condition = ">="
+        return "%s %s %s?" % (self.coluna, condition, str(self.valor))
