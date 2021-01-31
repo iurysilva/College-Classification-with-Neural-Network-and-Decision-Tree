@@ -28,35 +28,47 @@ class ArvoreDecisao(object):
     
     
     def altura(self):
-        return self.altura_recursiva(self.raiz, 0)
+        return self._altura_recursiva(self.raiz, 0)
 
-
-    def altura_recursiva(self, no_atual, altura_atual):
+    def _altura_recursiva(self, no_atual, altura_atual):
         if not no_atual:
             return altura_atual
-        altura_esq = self.altura_recursiva(no_atual.filho_esquerdo, altura_atual + 1)
-        altura_dir = self.altura_recursiva(no_atual.filho_direito, altura_atual + 1)
-        return max(altura_esq, altura_dir)
-
+        altura_esquerdo = self._altura_recursiva(no_atual.filho_esquerdo, altura_atual + 1)
+        altura_direito = self._altura_recursiva(no_atual.filho_direito, altura_atual + 1)
+        return max(altura_esquerdo, altura_direito)
 
     def cria_arvore(self):
-        self.raiz = self.cria_arvore_recursiva(self.banco_de_dados)
+        self.raiz = self._cria_arvore_recursiva(self.banco_de_dados)
 
-
-    def cria_arvore_recursiva(self, banco):
+    def _cria_arvore_recursiva(self, banco):
         
         no = self.verifica_melhor_corte(banco)
 
-        numero_classes_esq = len(np.unique(no.filho_esquerdo[self.coluna_alvo]))
-        numero_classes_dir = len(np.unique(no.filho_direito[self.coluna_alvo]))
-        
-        if numero_classes_esq != 1:
-            no.filho_esquerdo = self.cria_arvore_recursiva(no.filho_esquerdo)
+        n_ocorrencias_classes_esquerda = list(Counter(no.filho_esquerdo[self.coluna_alvo]).values())
+        n_classes_esquerda = len(list(Counter(no.filho_esquerdo[self.coluna_alvo]).values()))
+
+        n_ocorrencias_classes_direita = list(Counter(no.filho_direito[self.coluna_alvo]).values())
+        n_classes_direita = len(list(Counter(no.filho_direito[self.coluna_alvo]).values()))
+
+        dominancia_esquerda = 0
+        for index_classe in range(n_classes_esquerda):
+            dominancia_atual = n_ocorrencias_classes_esquerda[index_classe] / sum(n_ocorrencias_classes_esquerda)
+            if dominancia_atual > dominancia_esquerda:
+                dominancia_esquerda = dominancia_atual
+
+        dominancia_direita = 0
+        for index_classe in range(n_classes_direita):
+            dominancia_atual = n_ocorrencias_classes_direita[index_classe] / sum(n_ocorrencias_classes_direita)
+            if dominancia_atual > dominancia_direita:
+                dominancia_direita = dominancia_atual
+
+        if n_classes_esquerda != 1 or dominancia_esquerda < 0.8:
+            no.filho_esquerdo = self._cria_arvore_recursiva(no.filho_esquerdo)
         else:
             no.filho_esquerdo = Folha(no.filho_esquerdo, self.coluna_alvo)
 
-        if numero_classes_dir != 1:
-            no.filho_direito = self.cria_arvore_recursiva(no.filho_direito)
+        if n_classes_direita != 1 or dominancia_direita < 0.8:
+            no.filho_direito = self._cria_arvore_recursiva(no.filho_direito)
         else:
             no.filho_direito = Folha(no.filho_direito, self.coluna_alvo)
             
