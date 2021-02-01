@@ -3,16 +3,8 @@ import numpy as np
 import pandas as pd
 
 
-def padronizar_saida_iris(lista_saidas):
-    for saida in range(3):
-        if lista_saidas[saida] == 'Iris-setosa':
-            lista_saidas[saida] = 1
-        elif lista_saidas[saida] == 'Iris-versicolor':
-            lista_saidas[saida] = 2
-        elif lista_saidas[saida] == 'Iris-virginica':
-            lista_saidas[saida] = 3
-
-
+# Nesta função, tratamos a base de dados, encapsulando a chamada
+# de outras funções, a fim de retornar os dados separados.
 def tratar_bd(banco, coluna):
     tipos_saidas = banco[coluna].unique()
 
@@ -26,12 +18,12 @@ def tratar_bd(banco, coluna):
         banco_auxiliar = banco.query('%s==%d' % (coluna, classe))
         treino_auxiliar = retorna_treino(banco_auxiliar)
 
-        for linha in (treino_auxiliar.values):
+        for linha in treino_auxiliar.values:
             base_treino = np.concatenate((base_treino, linha), axis=0)
 
         teste_auxiliar = retorna_teste(banco_auxiliar, treino_auxiliar)
 
-        for linha in (teste_auxiliar.values):
+        for linha in teste_auxiliar.values:
             base_teste = np.concatenate((base_teste, linha), axis=0)
 
         tamanho_treino += len(treino_auxiliar)
@@ -44,4 +36,7 @@ def tratar_bd(banco, coluna):
     base_treino = pd.DataFrame(base_treino, columns=banco.columns)
     base_teste = pd.DataFrame(base_teste, columns=banco.columns)
 
+    # Ao fim do tratamento, retornamos a base de treino e teste,
+    # assim como as classes possíveis da coluna alvo.
     return base_treino, base_teste, tipos_saidas
+

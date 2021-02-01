@@ -1,17 +1,19 @@
 import numpy as np
 
-#calcula e retorna uma base de treino única
+
+# Aqui obtemos a base de treino, onde a proporção escolhida foi de 70%.
 def retorna_treino(base):
     treino = base.sample(frac=0.7)
     return treino
 
-#calcula e retorna uma base de teste única
+# A base de teste é obtida retirando a base de treino do Dataframe.
 def retorna_teste(base, base_treino):
     teste = base.drop(base_treino.index)
     return teste
 
-#calcula sensibilidade, confiabilidades entre outros a partir da matriz de
-#confusão
+
+# Nesta função, calculamos a sensibilidade, confiabilidades,
+# dentre outros a partir da matriz de confusão.
 def calcula_resultados(matriz, verbose=False):
     
     num_classes = len(matriz)
@@ -71,6 +73,8 @@ def calcula_resultados(matriz, verbose=False):
         if tn[classe] + fn[classe] == 0:
             confiabilidade_negativa[classe] = 0
 
+    # Se quisermos ver todos os detalhes da execução, podemos escolher este
+    # atributo verbose como True.
         if verbose:
             print('----------- Classe %d -----------' %(classe+1))
             print('Sensibilidade: ', sensibilidade[classe])
@@ -86,4 +90,5 @@ def calcula_resultados(matriz, verbose=False):
     if verbose:
         print('Acurácia:', acuracia, end='\n')
 
+    # Por fim, retornamos a acurácia da execução.
     return acuracia
