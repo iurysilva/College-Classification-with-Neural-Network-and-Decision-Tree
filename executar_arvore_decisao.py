@@ -7,7 +7,7 @@ import numpy as np
 
 banco = bd_vinho
 coluna_alvo = 'Vinho'
-n_execucoes = 1
+n_execucoes = 10
 
 # Calculamos os tempos de execução do algoritmo.
 tempos = np.array([])

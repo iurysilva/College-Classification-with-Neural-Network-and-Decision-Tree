@@ -39,4 +39,3 @@ def tratar_bd(banco, coluna):
     # Ao fim do tratamento, retornamos a base de treino e teste,
     # assim como as classes possíveis da coluna alvo.
     return base_treino, base_teste, tipos_saidas
-
