@@ -1,13 +1,17 @@
 import numpy as np
 
+#calcula e retorna uma base de treino única
 def retorna_treino(base):
     treino = base.sample(frac=0.7)
     return treino
 
+#calcula e retorna uma base de teste única
 def retorna_teste(base, base_treino):
     teste = base.drop(base_treino.index)
     return teste
 
+#calcula sensibilidade, confiabilidades entre outros a partir da matriz de
+#confusão
 def calcula_resultados(matriz, verbose=False):
     
     num_classes = len(matriz)

@@ -15,25 +15,35 @@ coluna_alvo = rede.banco.columns[rede.atributos_de_saida[0]]  # continente, Vinh
 banco = rede.banco
 tempos = np.array([])
 
+#Cria os vetores que armazenarão as acuracias referentes a cada sub-banco
 acuracia_treino = np.zeros(num_execucoes)
 acuracia_teste = np.zeros(num_execucoes)
 acuracia_total = np.zeros(num_execucoes)
 for execucao in range(num_execucoes):
     print('\nexecução : ', execucao)
     tempo_inicial = time.perf_counter()
+
+    # cria uma nova rede
     rede = arquitetura
     rede.learning_rate = learning_rate
     rede.insere_sinapses_e_bias()
 
+    # define as bases de treino e teste
     base_treino, base_teste, tipos_saidas = tratar_bd(banco, coluna_alvo)
     base_treino = base_treino.sample(frac=1).reset_index(drop=True)
+
+    # Realiza o backpropagation na função aprender
     rede.aprender(num_epocas, base_treino)
+
+    # Realiza o teste de cada base e retorna as matrizes de confusão
     matriz_treino = rede.testar(tipos_saidas, base_treino)
     matriz_teste = rede.testar(tipos_saidas, base_teste)
     matriz_total = rede.testar(tipos_saidas, banco)
 
     tempos = np.append(tempos, time.perf_counter() - tempo_inicial)
 
+    # Utiliza a função calcula resultados para usar as matrizes de confusão e
+    # coletar os dados referentes a sensibilidade, confiabilidades etc...
     print('base de treino: ')
     acuracia_treino[execucao] = calcula_resultados(matriz_treino, True)
     print('base de teste: ')

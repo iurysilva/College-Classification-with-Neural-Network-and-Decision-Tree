@@ -7,6 +7,12 @@ from estrutura_da_rede_neural.funcoes_uteis import derivar_sigmoide
 from estrutura_da_rede_neural.funcoes_uteis import tahn
 from bancos_de_dados.ferramentas import *
 
+
+#O Objeto Rede Neural, onde ficarão armazenadas as camadas, especificações do
+#banco de dados como número de atributos de entrada e saída, o próprio banco
+#para utilização pode parte dela, e outros parâmetros de execução e informações
+#importantes como a linha atual que a rede está lendo do banco, o valor esperado
+#para a classe dessa linha entre outros.
 class Rede_Neural:
     def __init__(self, atributos_entradas, atributos_saidas,  num_camadas, neuronios_por_camada_oculta, banco):
         self.atributos_de_entrada = atributos_entradas
@@ -21,6 +27,9 @@ class Rede_Neural:
         self.learning_rate = 1
         self.linha_atual = None
 
+    # Este método em essência serve para verificar se as camadas foram criadas de
+    # forma correta, ele mostra na tela várias informações referentes a todas as
+    # camadas da rede neural.
     def mostra_informacoes_das_camadas(self):
         print('')
         for camada in range(self.numero_camadas):
@@ -30,6 +39,9 @@ class Rede_Neural:
             print("Sinapses da camada: ")
             print(self.camadas[camada].sinapses, "\n")
 
+    # Este método é chamado no momento de criação da rede neural, ao mesmo tempo
+    # ele irá criar as camadas conforme a arquitetura definida no arquivo de
+    # execução do algoritmo.
     def cria_camadas(self):
         camadas = []
         for camada in range(self.numero_camadas):
@@ -42,6 +54,11 @@ class Rede_Neural:
         camadas[-1].final = True
         return camadas
 
+    # Este método deve ser chamado imediatamente após a criação da rede, ele irá
+    # inserir todas as sinapses entre todos os neurônios de todas as camadas, além
+    # disso, ele irá inserir o vetor de bias que será utilizado no Feedfoward e
+    # Backpropagation, as sinapses (pesos) são criados de forma aleatória, com
+    # valores entre 0 e 1 para cada peso.
     def insere_sinapses_e_bias(self):
         for camada in range(self.numero_camadas):
             if not self.camadas[camada].final:
@@ -53,12 +70,17 @@ class Rede_Neural:
                 self.camadas[camada].sinapses = np.copy(sinapses)
                 self.camadas[camada].bias = np.zeros((self.camadas[camada + 1].numero_neuronios, 1))
 
+    # Este método é responsável por inserir os atributos da linha que será lida na
+    # primeira camada, por isso seu único parâmetro é a linha do banco que será lida.
     def inserir_entradas(self, linha):
         banco = self.banco.values
         for entrada in range(self.num_entradas):
             atributo = self.atributos_de_entrada[entrada]
             self.camadas[0].neuronios[entrada] = sigmoide(banco[linha][atributo])
 
+    # Este método definirá qual será o valor esperado, ou seja, o valor correto da
+    # classe que possui os atributos na camada de entrada, note que este valor
+    # já foi convertido para seu equivalente na função Sigmoide.
     def inserir_saidas(self, linha):
         banco = self.banco.values
         for saida in range(self.num_saidas):
@@ -75,6 +97,9 @@ class Rede_Neural:
                 valor = valor
             self.valor_esperado = sigmoide(valor)
 
+    # O método feedfoward fará os calculos necessários utilizando os valores na
+    # camada de entrada para que se chegue ao valor de saída da rede, armazenado
+    # na última camada.
     def feedfoward(self):
         #print("lendo linha: ", self.linha_atual)
         for camada_atual in range(self.numero_camadas-1):
@@ -92,6 +117,11 @@ class Rede_Neural:
         #print("valor na camada final: ", self.camadas[-1].neuronios)
         #print("valor esperado: ", self.valor_esperado, "\n")
 
+    # O método a seguir serve para testar o feedfoward uma única ves em uma linha
+    # do bando de dados, isso é importante para que possamos fazer verificações
+    # únicas no bando depois que a rede já aprendeu, ou caso queiramos executar
+    # o feedfoward várias vezes já inserindo as entradas e saídas podemos chamar
+    # essa função em loop.
     def testar_feed_foward(self, linha, banco):
         self.banco = banco
         self.inserir_entradas(linha)
@@ -99,6 +129,8 @@ class Rede_Neural:
         self.linha_atual = linha
         self.feedfoward()
 
+    # Função para propagar o erro obtido na saída da rede neural, modificando os
+    # pesos das sinapses entre as camadas, além de modificar o Bias
     def backpropagation(self):
         erro_saida = self.valor_esperado - self.camadas[-1].neuronios
         derivada_saida = derivar_sigmoide(self.camadas[-1].neuronios)
@@ -128,6 +160,8 @@ class Rede_Neural:
             self.camadas[i-1].sinapses = self.camadas[i-1].sinapses + delta_pesos
             self.camadas[i].erro = erro
 
+    # Função para testar o algoritmo após o aprendizado, apenas classificando as
+    # amostras sem modificar os seus parâmetros
     def aprender(self, num_epocas, base_treino):
         self.banco = base_treino
         num_linhas = len(base_treino)
@@ -139,6 +173,8 @@ class Rede_Neural:
                 self.feedfoward()
                 self.backpropagation()
 
+    # Função que executa o aprendizado do algoritmo utilizando a base de treino.
+    # A mesma utiliza outras funções, como o backpropagation() e o feedfoward()
     def testar(self, tipos_saidas, base_teste):
         matriz_confusao = np.zeros((len(tipos_saidas), len(tipos_saidas)))
         num_linhas = len(base_teste)
