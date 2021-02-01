@@ -8,11 +8,11 @@ from estrutura_da_rede_neural.funcoes_uteis import tahn
 from bancos_de_dados.ferramentas import *
 
 
-#O Objeto Rede Neural, onde ficarão armazenadas as camadas, especificações do
-#banco de dados como número de atributos de entrada e saída, o próprio banco
-#para utilização pode parte dela, e outros parâmetros de execução e informações
-#importantes como a linha atual que a rede está lendo do banco, o valor esperado
-#para a classe dessa linha entre outros.
+# O Objeto Rede Neural, onde ficarão armazenadas as camadas, especificações do
+# banco de dados como número de atributos de entrada e saída, o próprio banco
+# para utilização pode parte dela, e outros parâmetros de execução e informações
+# importantes como a linha atual que a rede está lendo do banco, o valor esperado
+# para a classe dessa linha entre outros.
 class Rede_Neural:
     def __init__(self, atributos_entradas, atributos_saidas,  num_camadas, neuronios_por_camada_oculta, banco):
         self.atributos_de_entrada = atributos_entradas
@@ -86,7 +86,7 @@ class Rede_Neural:
         for saida in range(self.num_saidas):
             atributo = self.atributos_de_saida[saida]
             valor = banco[linha][atributo]
-            #print(valor)
+            # print(valor)
             if valor == 'Iris-setosa':
                 valor = 1
             elif valor == 'Iris-versicolor':
@@ -101,7 +101,7 @@ class Rede_Neural:
     # camada de entrada para que se chegue ao valor de saída da rede, armazenado
     # na última camada.
     def feedfoward(self):
-        #print("lendo linha: ", self.linha_atual)
+        # print("lendo linha: ", self.linha_atual)
         for camada_atual in range(self.numero_camadas-1):
             camada = self.camadas[camada_atual]
             if not camada.final:
@@ -114,8 +114,8 @@ class Rede_Neural:
                 print(camada.neuronios)
                 print('multiplicação das sinapses pelos neuronios: ')
                 print(self.camadas[camada_atual+1].neuronios)'''
-        #print("valor na camada final: ", self.camadas[-1].neuronios)
-        #print("valor esperado: ", self.valor_esperado, "\n")
+        # print("valor na camada final: ", self.camadas[-1].neuronios)
+        # print("valor esperado: ", self.valor_esperado, "\n")
 
     # O método a seguir serve para testar o feedfoward uma única ves em uma linha
     # do bando de dados, isso é importante para que possamos fazer verificações
@@ -165,7 +165,9 @@ class Rede_Neural:
     def aprender(self, num_epocas, base_treino):
         self.banco = base_treino
         num_linhas = len(base_treino)
+
         for epocas in range(num_epocas):
+
             for linha in range(num_linhas):
                 self.linha_atual = linha
                 self.inserir_entradas(linha)
@@ -189,20 +191,26 @@ class Rede_Neural:
             valor_ultimo = sigmoide(tipos_saidas[-1])
             valor_penultimo = sigmoide(tipos_saidas[-2])
 
-            if (len(tipos_saidas) == 2):
-                if self.camadas[-1].neuronios[0][0] < ((valor_1 + valor_2) / 2):
-                    resultado = np.where(tipos_saidas == tipos_saidas[0])
-                elif self.camadas[-1].neuronios[0][0] >= ((valor_1 + valor_2) / 2):
-                    resultado = np.where(tipos_saidas == tipos_saidas[-1])
-            else:
+            if len(tipos_saidas) == 2:
+
                 if self.camadas[-1].neuronios[0][0] < ((valor_1 + valor_2) / 2):
                     resultado = np.where(tipos_saidas == tipos_saidas[0])
 
-                elif self.camadas[-1].neuronios[0][0] >= ((valor_1 + valor_2) / 2) and self.camadas[-1].neuronios[0][0] < ((valor_ultimo + valor_penultimo) / 2):
+                elif self.camadas[-1].neuronios[0][0] >= ((valor_1 + valor_2) / 2):
+                    resultado = np.where(tipos_saidas == tipos_saidas[-1])
+            else:
+
+                if self.camadas[-1].neuronios[0][0] < ((valor_1 + valor_2) / 2):
+                    resultado = np.where(tipos_saidas == tipos_saidas[0])
+
+                elif (valor_1 + valor_2) / 2 <= self.camadas[-1].neuronios[0][0] < ((valor_ultimo + valor_penultimo) / 2):
+
                     for j in range(1, len(tipos_saidas) - 1):
+
                         valor_1 = sigmoide(tipos_saidas[j])
                         valor_2 = sigmoide(tipos_saidas[j - 1])
                         valor_3 = sigmoide(tipos_saidas[j + 1])
+
                         if (self.camadas[-1].neuronios[0][0] >= (valor_1 + valor_2)/2) and (self.camadas[-1].neuronios[0][0] < (valor_1 + valor_3))/2:
                             resultado = np.where(tipos_saidas == tipos_saidas[j])
 
@@ -211,7 +219,9 @@ class Rede_Neural:
 
             valor_teste = np.where(tipos_saidas == base_numpy[linha][self.atributos_de_saida[0]])
             matriz_confusao[int(valor_teste[0])][int(resultado[0])] += 1
+
         print(matriz_confusao)
+
         return matriz_confusao
 
 
